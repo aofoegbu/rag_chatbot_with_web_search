@@ -31,12 +31,12 @@ Preferred communication style: Simple, everyday language.
 - **Auto-Detection**: System automatically chooses PostgreSQL if available, falls back to SQLite
 
 ## Recent Changes (July 2025)
-- **Added Web Search Integration (Latest)**: Implemented Perplexity API for real-time internet information when needed
+- **Fixed Web Search Integration (Latest)**: Resolved critical issue preventing web search results from displaying in responses
+- **Real-Time Information Detection**: System now properly detects when users need current information (latest, recent, today, etc.)
+- **Web Search Priority Logic**: Web search now triggers FIRST for real-time questions, bypassing internal knowledge fallbacks
 - **Smart Search Logic**: System automatically determines when to use web search vs internal knowledge
 - **Web Source Citations**: All web search results include proper source links and references
-- **Fixed Answering Mechanism**: Resolved issue where model wasn't showing responses properly
-- **Improved Response Formatting**: Clean, well-structured answers with clear headings and bullet points
-- **Enhanced Knowledge Coverage**: 8 major domains with comprehensive, detailed responses plus web search
+- **Enhanced Response Flow**: Fixed response generation pipeline to properly show web search results in the chat interface
 - **Added PostgreSQL Support**: Dual database system with auto-detection
 - **Enhanced Testing Suite**: Comprehensive feature testing with visual feedback
 - **Conversation Storage**: All interactions stored in database for history tracking
