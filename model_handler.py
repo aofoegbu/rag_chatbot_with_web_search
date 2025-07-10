@@ -284,7 +284,22 @@ For instance, email spam filters learn by analyzing thousands of emails marked a
                 
                 return response
         
-        # Check for knowledge questions first (before greetings)
+        # Check for real-time information needs first
+        real_time_indicators = ['latest', 'recent', 'current', 'news', 'today', 'now', 'update', 'breaking', '2024', '2025', 'weather', 'forecast', 'happened', 'developments']
+        needs_real_time = any(indicator in user_lower for indicator in real_time_indicators)
+        
+        # Try web search first for real-time questions
+        if needs_real_time and self.web_search and self.web_search.is_available():
+            web_answer, web_sources = self.web_search.enhanced_search(user_input, context)
+            if web_answer and len(web_answer) > 100:
+                # Format with web sources
+                if web_sources:
+                    web_answer += f"\n\n**Web Sources:**\n"
+                    for i, source in enumerate(web_sources[:3], 1):
+                        web_answer += f"{i}. {source}\n"
+                return web_answer
+        
+        # Check for knowledge questions (after real-time check)
         if any(word in user_lower for word in ['what is', 'what are', 'how does', 'how do', 'explain', 'tell me about', 'describe']):
             # Try web search first for real-time information
             if self.web_search and self.web_search.is_available():

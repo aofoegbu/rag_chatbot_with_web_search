@@ -112,20 +112,26 @@ class PerplexitySearch:
         
         needs_web_search = any(indicator in user_query.lower() for indicator in search_indicators)
         
-        # Always try web search for real-time information
+        # Always try web search for real-time information or when no context
         if needs_web_search or not context_from_docs:
             # Create a focused search query
-            search_query = f"Current information about: {user_query}"
+            search_query = user_query  # Use the query directly for better results
             web_answer, sources = self.search_web(search_query)
             
-            if web_answer and "Web search" not in web_answer:
+            if web_answer and "Web search" not in web_answer and "failed" not in web_answer.lower():
                 # Combine with document context if available
-                if context_from_docs:
+                if context_from_docs and len(context_from_docs) > 50:
                     combined_answer = f"**Latest Information from Web:**\n{web_answer}\n\n**From Your Documents:**\n{context_from_docs}"
                 else:
                     combined_answer = f"**Latest Information:**\n{web_answer}"
                 
                 return combined_answer, sources
+        
+        # Also try web search for general questions when no good context
+        if not context_from_docs or len(context_from_docs) < 50:
+            web_answer, sources = self.search_web(user_query)
+            if web_answer and "Web search" not in web_answer and "failed" not in web_answer.lower():
+                return f"**Web Search Results:**\n{web_answer}", sources
         
         return "", []
     
