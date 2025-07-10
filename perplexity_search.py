@@ -112,26 +112,23 @@ class PerplexitySearch:
         
         needs_web_search = any(indicator in user_query.lower() for indicator in search_indicators)
         
-        # Always try web search for real-time information or when no context
-        if needs_web_search or not context_from_docs:
-            # Create a focused search query
-            search_query = user_query  # Use the query directly for better results
-            web_answer, sources = self.search_web(search_query)
-            
-            if web_answer and "Web search" not in web_answer and "failed" not in web_answer.lower():
-                # Combine with document context if available
-                if context_from_docs and len(context_from_docs) > 50:
-                    combined_answer = f"**Latest Information from Web:**\n{web_answer}\n\n**From Your Documents:**\n{context_from_docs}"
-                else:
-                    combined_answer = f"**Latest Information:**\n{web_answer}"
-                
-                return combined_answer, sources
+        # Always try web search to get comprehensive, current information for any question
+        web_answer, sources = self.search_web(user_query, max_tokens=800)
         
-        # Also try web search for general questions when no good context
-        if not context_from_docs or len(context_from_docs) < 50:
-            web_answer, sources = self.search_web(user_query)
-            if web_answer and "Web search" not in web_answer and "failed" not in web_answer.lower():
-                return f"**Web Search Results:**\n{web_answer}", sources
+        if web_answer and "Web search" not in web_answer and "failed" not in web_answer.lower():
+            # Create comprehensive response
+            if context_from_docs and len(context_from_docs) > 50:
+                # Check if context has real document content vs generic knowledge
+                has_real_docs = any(indicator in context_from_docs for indicator in ["From ", "uploaded", "file", "document"])
+                
+                if has_real_docs:
+                    combined_answer = f"**Comprehensive Answer:**\n\n**Current Information:**\n{web_answer}\n\n**From Your Documents:**\n{context_from_docs}"
+                else:
+                    combined_answer = f"**Comprehensive Answer:**\n{web_answer}"
+            else:
+                combined_answer = f"**Comprehensive Answer:**\n{web_answer}"
+            
+            return combined_answer, sources
         
         return "", []
     

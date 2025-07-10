@@ -98,19 +98,20 @@ class ModelHandler:
         if self.model is None or self.tokenizer is None:
             return "Sorry, the model is not available. Please try again later."
         
-        # Check for real-time information needs FIRST, before any other processing
-        real_time_indicators = ['latest', 'recent', 'current', 'news', 'today', 'now', 'update', 'breaking', '2024', '2025', 'weather', 'forecast', 'happened', 'developments']
-        needs_real_time = any(indicator in user_input.lower() for indicator in real_time_indicators)
-        
-        # Try web search FIRST for real-time questions, regardless of context or model type
-        if needs_real_time and self.web_search and self.web_search.is_available():
+        # Try web search for ALL questions to get comprehensive, current information
+        if self.web_search and self.web_search.is_available():
             web_answer, web_sources = self.web_search.enhanced_search(user_input, context)
             if web_answer and len(web_answer) > 100 and "Web search" not in web_answer and "failed" not in web_answer.lower():
                 # Format with web sources
                 if web_sources:
-                    web_answer += f"\n\n**Web Sources:**\n"
-                    for i, source in enumerate(web_sources[:3], 1):
+                    web_answer += f"\n\n**Sources:**\n"
+                    for i, source in enumerate(web_sources[:5], 1):
                         web_answer += f"{i}. {source}\n"
+                
+                # Add document context if available
+                if context and len(context) > 50 and not any(marker in context for marker in ["**Machine Learning", "**Software Development", "Previous topic:"]):
+                    web_answer += f"\n\n**Additional Context from Your Documents:**\n{context[:500]}..."
+                
                 return web_answer
         
         # Enhanced rule-based responses if no ML model is available
