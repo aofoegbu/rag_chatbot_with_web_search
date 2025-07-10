@@ -1,0 +1,45 @@
+Ogelo RAG Chat Assistant - Technical Documentation
+
+Overview:
+Ogelo RAG Chat Assistant is an advanced conversational AI system that combines Retrieval-Augmented Generation (RAG) with document processing capabilities. The system allows users to upload documents and ask questions about their content, providing intelligent responses based on the uploaded knowledge base.
+
+Key Features:
+1. Document Upload and Processing
+   - Supports text file uploads (.txt format)
+   - Automatic text chunking for optimal retrieval
+   - Vector embedding generation for semantic search
+
+2. Intelligent Chat Interface
+   - Natural language conversation capabilities
+   - Context-aware responses using uploaded documents
+   - Source citation for transparency
+
+3. Knowledge Base Management
+   - SQLite database for persistent storage
+   - Document count tracking
+   - Easy knowledge base clearing functionality
+
+4. Adaptive Technology Stack
+   - Primary: Advanced ML models (Phi-3-mini, sentence-transformers)
+   - Fallback: Rule-based systems for basic functionality
+   - Robust error handling and graceful degradation
+
+Technical Architecture:
+- Frontend: Streamlit web interface
+- Backend: Python with modular components
+- Database: SQLite for document storage
+- Embeddings: Sentence transformers or simple text-based matching
+- Language Model: Quantized Phi-3-mini or rule-based responses
+
+Usage Instructions:
+1. Upload a document using the sidebar file uploader
+2. Click "Process Document" to add it to the knowledge base
+3. Ask questions in the chat interface
+4. Review sources provided with each response
+5. Use "Clear Chat History" to start fresh conversations
+6. Use "Clear Knowledge Base" to remove all documents
+
+System Status Information:
+The sidebar displays real-time status of system components, showing whether advanced ML models are available or if the system is running in fallback mode with simpler alternatives.
+
+This system is designed to be resilient and functional even when some advanced dependencies are not available, ensuring users can always interact with their uploaded documents.

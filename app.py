@@ -8,7 +8,7 @@ import time
 
 # Page configuration
 st.set_page_config(
-    page_title="RAG Chat Assistant",
+    page_title="Ogelo RAG Chat Assistant",
     page_icon="🤖",
     layout="wide"
 )
@@ -75,7 +75,7 @@ if st.sidebar.button("Clear Knowledge Base", type="secondary"):
         st.rerun()
 
 # Main chat interface
-st.title("🤖 RAG Chat Assistant")
+st.title("🤖 Ogelo RAG Chat Assistant")
 st.markdown("Chat with an AI assistant that can reference your uploaded documents.")
 
 # Display chat messages
