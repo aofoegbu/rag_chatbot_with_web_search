@@ -4,6 +4,12 @@ try:
 except ImportError:
     PDF_AVAILABLE = False
 
+try:
+    import pandas as pd
+    PANDAS_AVAILABLE = True
+except ImportError:
+    PANDAS_AVAILABLE = False
+
 import io
 from typing import List
 from database import DatabaseManager
@@ -28,6 +34,8 @@ class DocumentProcessor:
                 text = self._extract_text_from_pdf(uploaded_file)
             elif file_extension == 'txt':
                 text = self._extract_text_from_txt(uploaded_file)
+            elif file_extension == 'csv':
+                text = self._extract_text_from_csv(uploaded_file)
             else:
                 print(f"Unsupported file type: {file_extension}")
                 return False
@@ -89,6 +97,55 @@ class DocumentProcessor:
         except Exception as e:
             print(f"Error extracting text from TXT: {e}")
             return ""
+    
+    def _extract_text_from_csv(self, uploaded_file) -> str:
+        """Extract text from a CSV file."""
+        if not PANDAS_AVAILABLE:
+            return "CSV processing is not available. Please install pandas or upload a text file instead."
+            
+        try:
+            # Reset file pointer
+            uploaded_file.seek(0)
+            
+            # Read CSV file
+            df = pd.read_csv(uploaded_file)
+            
+            # Convert DataFrame to a readable text format
+            text_parts = []
+            
+            # Add column headers
+            text_parts.append("CSV Data Structure:")
+            text_parts.append(f"Columns: {', '.join(df.columns.tolist())}")
+            text_parts.append(f"Total rows: {len(df)}")
+            text_parts.append("\nData Content:")
+            
+            # Add each row as structured text
+            for index, row in df.iterrows():
+                row_text = f"Row {index + 1}: "
+                row_items = []
+                for col in df.columns:
+                    value = str(row[col]) if pd.notna(row[col]) else "N/A"
+                    row_items.append(f"{col}: {value}")
+                row_text += ", ".join(row_items)
+                text_parts.append(row_text)
+                
+                # Limit to first 100 rows to avoid memory issues
+                if index >= 99:
+                    text_parts.append(f"... and {len(df) - 100} more rows")
+                    break
+            
+            # Add summary statistics for numeric columns
+            numeric_cols = df.select_dtypes(include=['number']).columns
+            if len(numeric_cols) > 0:
+                text_parts.append("\nNumeric Summary:")
+                for col in numeric_cols:
+                    stats = df[col].describe()
+                    text_parts.append(f"{col}: mean={stats['mean']:.2f}, min={stats['min']:.2f}, max={stats['max']:.2f}")
+            
+            return "\n".join(text_parts)
+        except Exception as e:
+            print(f"Error reading CSV file: {e}")
+            return f"Error processing CSV file: {str(e)}"
     
     def _split_text_into_chunks(self, text: str) -> List[str]:
         """Split text into overlapping chunks."""

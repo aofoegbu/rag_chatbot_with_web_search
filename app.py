@@ -31,16 +31,25 @@ st.sidebar.title("📚 Knowledge Base")
 # Document upload section
 st.sidebar.header("Upload Documents")
 
-# Check if PDF processing is available
+# Check available file processing capabilities
 try:
-    from document_processor import PDF_AVAILABLE
+    from document_processor import PDF_AVAILABLE, PANDAS_AVAILABLE
+    file_types = ["txt"]
+    help_parts = ["text files"]
+    
     if PDF_AVAILABLE:
-        file_types = ["pdf", "txt"]
-        help_text = "Upload PDF or text files to add to the knowledge base"
+        file_types.append("pdf")
+        help_parts.append("PDF")
     else:
-        file_types = ["txt"]
-        help_text = "PDF support not available. Please upload text files only."
-        st.sidebar.info("📄 PDF support requires PyPDF2. Currently only text files are supported.")
+        st.sidebar.info("📄 PDF support requires PyPDF2")
+        
+    if PANDAS_AVAILABLE:
+        file_types.append("csv")
+        help_parts.append("CSV")
+    else:
+        st.sidebar.info("📊 CSV support requires pandas")
+    
+    help_text = f"Upload {', '.join(help_parts)} files to add to the knowledge base"
 except:
     file_types = ["txt"]
     help_text = "Upload text files to add to the knowledge base"
@@ -211,7 +220,7 @@ if st.sidebar.button("🔍 Test All Features"):
         except Exception as e:
             st.sidebar.error(f"❌ RAG System: {e}")
 
-# Add conversation history viewer
+# Add conversation history viewer and integration
 if st.sidebar.button("📜 View Recent Conversations"):
     recent_conversations = st.session_state.db_manager.get_recent_conversations(5)
     if recent_conversations:
@@ -222,3 +231,21 @@ if st.sidebar.button("📜 View Recent Conversations"):
                 st.sidebar.markdown("---")
     else:
         st.sidebar.info("No conversations found in database")
+
+# Add option to load previous conversations into current chat
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 💬 Previous Conversations")
+
+if st.sidebar.button("🔄 Load Previous Context"):
+    recent_conversations = st.session_state.db_manager.get_recent_conversations(3)
+    if recent_conversations:
+        # Add recent conversations to current chat session
+        for user_msg, assistant_msg in reversed(recent_conversations):
+            # Only add if not already in current session
+            if not any(msg["content"] == user_msg for msg in st.session_state.messages if msg["role"] == "user"):
+                st.session_state.messages.insert(0, {"role": "user", "content": user_msg})
+                st.session_state.messages.insert(1, {"role": "assistant", "content": assistant_msg})
+        st.sidebar.success(f"Loaded {len(recent_conversations)} previous conversations")
+        st.rerun()
+    else:
+        st.sidebar.info("No previous conversations to load")

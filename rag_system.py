@@ -70,8 +70,8 @@ class RAGSystem:
         
         return embedding
     
-    def get_relevant_context(self, query: str, top_k: int = 3) -> Tuple[str, List[str]]:
-        """Get relevant context for a query using RAG."""
+    def get_relevant_context(self, query: str, top_k: int = 3, include_conversation_history: bool = True) -> Tuple[str, List[str]]:
+        """Get relevant context for a query using RAG with optional conversation history."""
         try:
             # Get query embedding
             query_embedding = self.get_embedding(query)
@@ -79,27 +79,41 @@ class RAGSystem:
             # Search for similar chunks
             similar_chunks = self.db_manager.search_similar_chunks(query_embedding, top_k)
             
-            if not similar_chunks:
-                return "", []
-            
             # Extract context and sources
             context_parts = []
             sources = []
             
+            # Add document context
             for filename, content, similarity in similar_chunks:
                 # Only include chunks with reasonable similarity
                 if similarity > 0.3:  # Threshold for relevance
-                    context_parts.append(content)
+                    context_parts.append(f"From {filename}: {content}")
                     sources.append(f"{filename} (similarity: {similarity:.2f})")
             
+            # Add conversation history context if requested and available
+            if include_conversation_history:
+                try:
+                    recent_conversations = self.db_manager.get_recent_conversations(2)
+                    if recent_conversations:
+                        context_parts.append("\nRecent conversation context:")
+                        for i, (user_msg, assistant_msg) in enumerate(recent_conversations):
+                            # Truncate long messages for context
+                            user_short = user_msg[:100] + "..." if len(user_msg) > 100 else user_msg
+                            assistant_short = assistant_msg[:150] + "..." if len(assistant_msg) > 150 else assistant_msg
+                            context_parts.append(f"Previous Q{i+1}: {user_short}")
+                            context_parts.append(f"Previous A{i+1}: {assistant_short}")
+                        sources.append("Recent conversations")
+                except Exception as conv_error:
+                    print(f"Could not retrieve conversation history: {conv_error}")
+            
             # Combine context
-            context = "\n\n".join(context_parts)
+            context = "\n\n".join(context_parts) if context_parts else "No relevant context found."
             
             return context, sources
             
         except Exception as e:
             print(f"Error getting relevant context: {e}")
-            return "", []
+            return "Error retrieving context.", []
     
     def is_embedding_model_loaded(self) -> bool:
         """Check if the embedding model is loaded."""

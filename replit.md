@@ -36,6 +36,9 @@ Preferred communication style: Simple, everyday language.
 - **Conversation Storage**: All interactions stored in database for history tracking
 - **Database Statistics**: Real-time metrics display for system monitoring
 - **Improved UI**: Better status indicators and system information display
+- **CSV File Support**: Added pandas-based CSV processing with structured data extraction
+- **Previous Context Integration**: Load and integrate conversation history into chat sessions
+- **Enhanced RAG Context**: Include conversation history in response generation for continuity
 
 ## Key Components
 
@@ -51,13 +54,19 @@ Preferred communication style: Simple, everyday language.
 
 ### 2. Document Processor (`document_processor.py`)
 - **Purpose**: Extracts and processes text from uploaded documents
-- **Supported Formats**: PDF (via PyPDF2) and plain text files
+- **Supported Formats**: 
+  - PDF files (via PyPDF2)
+  - Plain text files (.txt)
+  - CSV files (via pandas) with structured data extraction and statistics
 - **Text Chunking**: Splits documents into 500-character chunks with 50-character overlap for better context retrieval
+- **CSV Processing**: Converts tabular data to searchable text with row details and numeric summaries
 
 ### 3. RAG System (`rag_system.py`)
 - **Purpose**: Handles embedding generation and similarity search for retrieval
 - **Embedding Model**: Uses `all-MiniLM-L6-v2` from sentence-transformers for fast, lightweight embeddings
 - **Retrieval Strategy**: Cosine similarity search with configurable top-k results
+- **Context Integration**: Automatically includes recent conversation history for contextual continuity
+- **Smart Context**: Combines document chunks with previous Q&A for comprehensive responses
 
 ### 4. Model Handler (`model_handler.py`)
 - **Purpose**: Manages the language model for generating responses
@@ -103,8 +112,10 @@ Preferred communication style: Simple, everyday language.
 - **streamlit**: Complete web interface framework
 
 ### Database
-- **sqlite3**: Built-in Python SQLite interface
+- **sqlite3**: Built-in Python SQLite interface  
+- **psycopg2-binary**: PostgreSQL adapter for Python
 - **pickle**: Serialization for embedding storage
+- **pandas**: CSV data processing and analysis
 
 ## Deployment Strategy
 
