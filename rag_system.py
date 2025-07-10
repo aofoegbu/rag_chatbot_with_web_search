@@ -90,19 +90,16 @@ class RAGSystem:
                     context_parts.append(f"From {filename}: {content}")
                     sources.append(f"{filename} (similarity: {similarity:.2f})")
             
-            # Add conversation history context if requested and available
+            # Add conversation history context if requested and available (simplified)
             if include_conversation_history:
                 try:
-                    recent_conversations = self.db_manager.get_recent_conversations(2)
+                    recent_conversations = self.db_manager.get_recent_conversations(1)
                     if recent_conversations:
-                        context_parts.append("\nRecent conversation context:")
                         for i, (user_msg, assistant_msg) in enumerate(recent_conversations):
-                            # Truncate long messages for context
-                            user_short = user_msg[:100] + "..." if len(user_msg) > 100 else user_msg
-                            assistant_short = assistant_msg[:150] + "..." if len(assistant_msg) > 150 else assistant_msg
-                            context_parts.append(f"Previous Q{i+1}: {user_short}")
-                            context_parts.append(f"Previous A{i+1}: {assistant_short}")
-                        sources.append("Recent conversations")
+                            # Only add relevant previous context, not full conversations
+                            if len(user_msg) < 50:  # Only short, relevant previous questions
+                                context_parts.append(f"Previous topic: {user_msg}")
+                                sources.append("Previous conversation")
                 except Exception as conv_error:
                     print(f"Could not retrieve conversation history: {conv_error}")
             

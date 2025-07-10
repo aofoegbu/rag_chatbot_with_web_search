@@ -221,39 +221,69 @@ For instance, email spam filters learn by analyzing thousands of emails marked a
         """Generate an enhanced rule-based response with context integration and proper citations."""
         user_lower = user_input.lower()
         
-        # Context-aware responses with document integration and citations
+        # Enhanced context-aware responses that directly answer questions
         if context and context.strip():
-            # Analyze context for key information
-            context_snippet = context[:400]
+            # Check if context contains useful document information (not just conversation history)
+            has_document_info = any(indicator in context for indicator in ["From ", "documents", "uploaded", "file"])
+            has_conversation_only = "Previous topic:" in context and not has_document_info
+            
+            # If context is just old conversations, ignore it and provide knowledge response
+            if has_conversation_only or len(context) < 100:
+                from web_search_integration import WebSearchIntegrator
+                integrator = WebSearchIntegrator()
+                enhanced_context = integrator._enhance_with_knowledge(user_input)
+                if enhanced_context and len(enhanced_context) > 100:
+                    return enhanced_context
+            
+            # Extract knowledge from context to provide direct answers
+            from web_search_integration import WebSearchIntegrator
+            integrator = WebSearchIntegrator()
+            
+            # If context already contains enhanced knowledge, use it directly  
+            if "**Direct Answer:**" in context or "**Machine Learning" in context or "**Software Development" in context:
+                return context
+            
+            # Otherwise, enhance the context and provide a direct answer
+            enhanced_context = integrator._enhance_with_knowledge(user_input, context)
+            if enhanced_context and len(enhanced_context) > 100:
+                return enhanced_context
+            
+            # Fallback to basic context processing
+            context_snippet = context[:500]
             
             if any(word in user_lower for word in ['what', 'explain', 'describe', 'tell me about']):
-                response = f"Based on your uploaded documents: {context_snippet}"
+                response = f"Based on available information: {context_snippet}"
                 
-                # Add general knowledge enhancement with citations
-                if 'definition' in user_lower or 'what is' in user_lower:
-                    response += "\n\n**Additional Context from Knowledge Base:**"
-                    response += "\nThis concept generally involves understanding the relationships between different components and how they work together to achieve specific outcomes."
-                    response += "\n\n**References:**"
-                    response += "\n- Your uploaded documents"
-                    response += "\n- General knowledge synthesis"
+                # Add knowledge enhancement
+                response += "\n\n**Additional Context:**"
+                response += "\nThis concept involves understanding key relationships and principles that apply across different situations."
+                response += "\n\n**Sources:** Available documents and knowledge base"
                 
                 return response
                 
             elif any(word in user_lower for word in ['how', 'why', 'when', 'where']):
-                response = f"**From Your Documents:** {context_snippet}"
+                response = f"**Answer:** {context_snippet}"
                 
-                # Add reasoning and examples with citations
-                response += "\n\n**Knowledge Integration:**"
-                response += "\nThis information helps explain the process. In similar situations, the key factors typically include proper planning, understanding the requirements, and following established best practices."
-                response += "\n\n**References:**"
-                response += "\n- Document analysis results"
-                response += "\n- Best practices knowledge base"
+                # Add practical guidance
+                response += "\n\n**Key Points:**"
+                response += "\nThe process typically involves systematic steps, proper methodology, and attention to important details."
+                response += "\n\n**Sources:** Document analysis and established practices"
                 
                 return response
         
-        # Enhanced general responses with examples and context
-        if any(word in user_lower for word in ['hello', 'hi', 'hey']):
-            return "Hello! I'm Ogelo, your intelligent RAG assistant. I combine information from your documents with general knowledge to provide comprehensive answers. I can analyze PDFs, text files, CSV data, images (OCR), and web content. What would you like to explore today?"
+        # Check for knowledge questions first (before greetings)
+        if any(word in user_lower for word in ['what is', 'what are', 'how does', 'how do', 'explain', 'tell me about', 'describe']):
+            # Get enhanced knowledge from web search integration
+            from web_search_integration import WebSearchIntegrator
+            integrator = WebSearchIntegrator()
+            enhanced_context = integrator._enhance_with_knowledge(user_input)
+            
+            if enhanced_context and len(enhanced_context) > 100:
+                return enhanced_context
+        
+        # Enhanced general responses with examples and context  
+        if any(word in user_lower for word in ['hello', 'hi', 'hey']) and not any(word in user_lower for word in ['what', 'how', 'explain']):
+            return "Hello! I'm Ogelo, your intelligent RAG assistant. I can provide comprehensive answers by combining information from your documents with my extensive knowledge base. I can analyze PDFs, text files, CSV data, images (OCR), and web content. What would you like to explore today?"
         
         elif any(word in user_lower for word in ['help', 'what can you do']):
             return """I provide intelligent responses by combining multiple sources with proper citations:
