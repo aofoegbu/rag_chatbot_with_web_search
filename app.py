@@ -198,13 +198,56 @@ if st.button("Clear Chat History", type="secondary"):
 st.sidebar.markdown("---")
 st.sidebar.markdown("### System Status")
 
+# Model Selection Section
+st.sidebar.markdown("### 🤖 AI Model Selection")
+
+# Get available models
+try:
+    available_models = st.session_state.model_handler.get_available_models()
+    model_options = [f"{info['name']} - {info['description']}" for model_name, info in available_models.items()]
+    model_keys = list(available_models.keys())
+    
+    # Find current model index
+    current_model_index = 0
+    try:
+        current_model_index = model_keys.index(st.session_state.model_handler.model_name)
+    except:
+        pass
+    
+    selected_model_index = st.sidebar.selectbox(
+        "Choose AI Model:",
+        range(len(model_options)),
+        index=current_model_index,
+        format_func=lambda x: model_options[x],
+        help="Select which AI model to use for generating responses"
+    )
+    
+    # Switch model if changed
+    selected_model_key = model_keys[selected_model_index]
+    if selected_model_key != st.session_state.model_handler.model_name:
+        with st.sidebar.spinner("Switching model..."):
+            success = st.session_state.model_handler.switch_model(selected_model_key)
+            if success:
+                st.sidebar.success(f"Switched to {available_models[selected_model_key]['name']}")
+                st.rerun()
+            else:
+                st.sidebar.error("Failed to switch model")
+                
+except Exception as e:
+    st.sidebar.error(f"Model selection error: {e}")
+
 # Check model status
 try:
     from model_handler import TRANSFORMERS_AVAILABLE
     from rag_system import SENTENCE_TRANSFORMERS_AVAILABLE
     
+    current_model_info = st.session_state.model_handler.get_available_models().get(
+        st.session_state.model_handler.model_name, 
+        {"name": "Unknown", "description": ""}
+    )
+    
     if TRANSFORMERS_AVAILABLE:
-        st.sidebar.markdown("🟢 **Model:** Phi-3-mini (Advanced)")
+        st.sidebar.markdown(f"🟢 **Model:** {current_model_info['name']} (Advanced)")
     else:
         st.sidebar.markdown("🟡 **Model:** Rule-based (Simple)")
     
@@ -242,13 +285,18 @@ if st.sidebar.button("🔍 Test All Features"):
         except Exception as e:
             st.sidebar.error(f"❌ Database: {e}")
         
-        # Test model loading
+        # Test model loading and selection
         try:
+            available_models = st.session_state.model_handler.get_available_models()
+            current_model = st.session_state.model_handler.model_name
+            model_info = available_models.get(current_model, {})
+            st.sidebar.success(f"✅ Model: {model_info.get('name', 'Unknown')} loaded")
+            
             test_response = st.session_state.model_handler.generate_response("Hello")
             if test_response:
-                st.sidebar.success("✅ Model: Working")
+                st.sidebar.success("✅ Response Generation: Working")
             else:
-                st.sidebar.warning("⚠️ Model: Limited functionality")
+                st.sidebar.warning("⚠️ Response Generation: Limited functionality")
         except Exception as e:
             st.sidebar.error(f"❌ Model: {e}")
         
@@ -262,12 +310,57 @@ if st.sidebar.button("🔍 Test All Features"):
         except Exception as e:
             st.sidebar.error(f"❌ Embeddings: {e}")
         
-        # Test RAG system
+        # Test RAG system with knowledge integration
         try:
-            test_context, test_sources = st.session_state.rag_system.get_relevant_context("test query")
-            st.sidebar.success("✅ RAG System: Working")
+            test_context, test_sources = st.session_state.rag_system.get_relevant_context("machine learning")
+            st.sidebar.success(f"✅ RAG System: Working ({len(test_sources)} sources)")
         except Exception as e:
             st.sidebar.error(f"❌ RAG System: {e}")
+            
+        # Test document processing capabilities
+        try:
+            from document_processor import PDF_AVAILABLE, PANDAS_AVAILABLE, OCR_AVAILABLE, WEB_SCRAPING_AVAILABLE
+            
+            capabilities = []
+            if PDF_AVAILABLE: capabilities.append("PDF")
+            if PANDAS_AVAILABLE: capabilities.append("CSV") 
+            if OCR_AVAILABLE: capabilities.append("OCR")
+            if WEB_SCRAPING_AVAILABLE: capabilities.append("Web")
+            
+            st.sidebar.success(f"✅ Document Processing: {', '.join(capabilities)}")
+        except Exception as e:
+            st.sidebar.error(f"❌ Document Processing: {e}")
+            
+        # Test knowledge integration
+        try:
+            from web_search_integration import web_search_integrator
+            enhanced_context, _ = web_search_integrator.search_and_enhance("test query", "")
+            st.sidebar.success("✅ Knowledge Integration: Working")
+        except Exception as e:
+            st.sidebar.error(f"❌ Knowledge Integration: {e}")
+
+# Run comprehensive test suite button
+if st.sidebar.button("🔬 Run Full Test Suite"):
+    with st.sidebar.spinner("Running comprehensive tests..."):
+        try:
+            import subprocess
+            result = subprocess.run(['python', 'comprehensive_test.py'], 
+                                  capture_output=True, text=True, cwd='.')
+            
+            with st.sidebar.expander("Full Test Results", expanded=True):
+                if result.returncode == 0:
+                    st.sidebar.success("✅ All tests completed successfully")
+                else:
+                    st.sidebar.warning("⚠️ Some tests had issues")
+                
+                # Show test output
+                if result.stdout:
+                    st.sidebar.text_area("Test Output", result.stdout, height=300)
+                if result.stderr:
+                    st.sidebar.text_area("Test Errors", result.stderr, height=150)
+                    
+        except Exception as e:
+            st.sidebar.error(f"❌ Test Suite Error: {e}")
 
 # Add conversation history viewer and integration
 if st.sidebar.button("📜 View Recent Conversations"):

@@ -42,6 +42,8 @@ Preferred communication style: Simple, everyday language.
 - **Advanced Prompt Engineering**: Structured prompts with in-context examples and comprehensive knowledge integration
 - **Multi-Source Intelligence**: Combines document knowledge, conversation history, general knowledge, and contextual examples
 - **Web Knowledge Integration**: Enhanced responses with relevant general knowledge and reasoning capabilities
+- **Model Selection Interface**: User can choose between Phi-3 Mini and DialoGPT models with live switching
+- **Comprehensive Testing Suite**: Automated testing system with 35+ test cases covering all components and features
 - **Image OCR Support**: Added pytesseract integration for extracting text from images (JPG, PNG, GIF, BMP, TIFF)
 - **URL Content Extraction**: Implemented web scraping with trafilatura and BeautifulSoup for processing website content
 - **Multi-format Document Support**: Now supports PDF, text, CSV, images, and web URLs
@@ -81,22 +83,33 @@ Preferred communication style: Simple, everyday language.
 - **Multi-Source Context**: Combines document chunks, conversation history, and web knowledge for comprehensive responses
 
 ### 4. Model Handler (`model_handler.py`)
-- **Purpose**: Manages the language model for generating responses with advanced prompt engineering
-- **Primary Model**: Microsoft Phi-3-mini-4k-instruct for efficient CPU-based inference
-- **Fallback Strategy**: Enhanced rule-based responses with knowledge integration when ML models unavailable
+- **Purpose**: Manages multiple language models with user selection and advanced prompt engineering
+- **Available Models**: 
+  - Phi-3 Mini (Recommended): Microsoft's efficient 4K context model
+  - DialoGPT Medium: Conversational AI model for dialogue
+- **Model Switching**: Live model switching without restarting the application
 - **Prompt Engineering**: Structured prompts with in-context examples, conversation history, and comprehensive context
 - **Knowledge Integration**: Combines document context with general knowledge, examples, and reasoning
+- **Fallback Strategy**: Enhanced rule-based responses with knowledge integration when ML models unavailable
 - **Optimization**: CPU-optimized loading with float32 precision and low memory usage
 
 ### 5. Main Application (`app.py`)
-- **Purpose**: Streamlit interface orchestrating all components
+- **Purpose**: Streamlit interface orchestrating all components with advanced user controls
 - **State Management**: Initializes and maintains all system components in session state
 - **User Interface**: 
+  - Model selection dropdown with live switching capabilities
   - Clean sidebar for document management and system monitoring
-  - Main chat area with source citations
-  - Comprehensive testing suite integrated into sidebar
-  - Real-time system status indicators
-  - Database statistics and conversation history viewer
+  - Main chat area with source citations and conversation continuity
+  - Comprehensive testing suite with automated test runner
+  - Real-time system status indicators showing current model and capabilities
+  - Database statistics and conversation history viewer with integration options
+
+### 6. Testing Suite (`comprehensive_test.py`)
+- **Purpose**: Automated testing framework for validating all system components
+- **Test Coverage**: 35+ test cases covering imports, database, document processing, RAG, models, files, and web integration
+- **Test Categories**: Module imports, database operations, document capabilities, embedding systems, model functionality, file processing, web integration
+- **Integration**: Embedded in Streamlit UI with detailed results display
+- **Success Metrics**: Comprehensive reporting with pass/warning/fail statistics
 
 ## Data Flow
 

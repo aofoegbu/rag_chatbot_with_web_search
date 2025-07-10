@@ -15,7 +15,32 @@ class ModelHandler:
         self.tokenizer = None
         self.model = None
         self.max_length = 2048
+        self.available_models = {
+            "microsoft/Phi-3-mini-4k-instruct": {
+                "name": "Phi-3 Mini (Recommended)",
+                "description": "Microsoft's efficient 4K context model, optimized for CPU",
+                "max_length": 4096
+            },
+            "microsoft/DialoGPT-medium": {
+                "name": "DialoGPT Medium",
+                "description": "Conversational AI model, good for dialogue",
+                "max_length": 1024
+            }
+        }
         self.load_model()
+    
+    def get_available_models(self):
+        """Get list of available models with descriptions."""
+        return self.available_models
+    
+    def switch_model(self, new_model_name: str):
+        """Switch to a different model."""
+        if new_model_name in self.available_models:
+            self.model_name = new_model_name
+            self.max_length = self.available_models[new_model_name]["max_length"]
+            self.load_model()
+            return True
+        return False
     
     def load_model(self):
         """Load the quantized model and tokenizer."""
