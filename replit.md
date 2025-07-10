@@ -31,6 +31,10 @@ Preferred communication style: Simple, everyday language.
 - **Auto-Detection**: System automatically chooses PostgreSQL if available, falls back to SQLite
 
 ## Recent Changes (July 2025)
+- **Fixed Answering Mechanism (Latest)**: Resolved issue where model wasn't showing responses properly
+- **Improved Response Formatting**: Clean, well-structured answers with clear headings and bullet points
+- **Removed Internet Search Dependencies**: System now relies entirely on internal knowledge base for better reliability
+- **Enhanced Knowledge Coverage**: 8 major domains with comprehensive, detailed responses
 - **Added PostgreSQL Support**: Dual database system with auto-detection
 - **Enhanced Testing Suite**: Comprehensive feature testing with visual feedback
 - **Conversation Storage**: All interactions stored in database for history tracking
@@ -41,7 +45,7 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced RAG Context**: Include conversation history in response generation for continuity
 - **Advanced Prompt Engineering**: Structured prompts with in-context examples and comprehensive knowledge integration
 - **Multi-Source Intelligence**: Combines document knowledge, conversation history, general knowledge, and contextual examples
-- **Web Knowledge Integration**: Enhanced responses with relevant general knowledge and reasoning capabilities
+- **Knowledge Base Integration**: Enhanced responses with relevant internal knowledge and reasoning capabilities
 - **Comprehensive Citation System**: Every answer includes proper references and source attributions
 - **Knowledge Base References**: Detailed citations for internal knowledge, best practices, and domain expertise
 - **Model Selection Interface**: User can choose between Phi-3 Mini and DialoGPT models with live switching

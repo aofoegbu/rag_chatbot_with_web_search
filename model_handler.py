@@ -240,7 +240,7 @@ For instance, email spam filters learn by analyzing thousands of emails marked a
             integrator = WebSearchIntegrator()
             
             # If context already contains enhanced knowledge, use it directly  
-            if "**Direct Answer:**" in context or "**Machine Learning" in context or "**Software Development" in context:
+            if any(marker in context for marker in ["**Machine Learning", "**Software Development", "**Climate Change", "**Renewable Energy", "**Data Science", "**Business &", "**Health &", "**Education &"]):
                 return context
             
             # Otherwise, enhance the context and provide a direct answer

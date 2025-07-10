@@ -64,10 +64,9 @@ class WebSearchIntegrator:
         # Add comprehensive knowledge based on query topics using model's internal knowledge
         # Use broad matching to catch related terms and provide comprehensive responses
         if any(term in query_lower for term in ['machine learning', 'ai', 'artificial intelligence', 'neural network', 'deep learning', 'algorithm', 'model', 'training', 'how does machine learning', 'how machine learning']):
-            knowledge_addition = """
+            knowledge_addition = """**Machine Learning & AI**
 
-**Machine Learning & AI Knowledge:**
-Machine learning is a method of data analysis that automates analytical model building. It's based on the idea that systems can learn from data, identify patterns, and make decisions with minimal human intervention.
+Machine learning is a method of data analysis that automates analytical model building. Systems learn from data, identify patterns, and make decisions with minimal human intervention.
 
 **Core Concepts:**
 - **Supervised Learning**: Training on labeled data (classification, regression)
@@ -88,9 +87,8 @@ Machine learning is a method of data analysis that automates analytical model bu
 - Generative AI for content creation and code generation"""
             
         elif any(term in query_lower for term in ['renewable energy', 'solar', 'wind', 'clean energy', 'sustainability']):
-            knowledge_addition = """
+            knowledge_addition = """**Renewable Energy & Sustainability**
 
-**Renewable Energy & Sustainability:**
 Renewable energy comes from natural sources that are replenished faster than they are consumed, offering a sustainable alternative to fossil fuels.
 
 **Solar Energy:**
@@ -124,9 +122,8 @@ Renewable energy comes from natural sources that are replenished faster than the
 - Climate change mitigation potential"""
             
         elif any(term in query_lower for term in ['climate change', 'global warming', 'carbon']):
-            knowledge_addition = """
+            knowledge_addition = """**Climate Change & Environmental Science**
 
-**Climate Change & Environmental Science:**
 Climate change refers to long-term shifts in global or regional climate patterns, primarily attributed to increased levels of greenhouse gases in the atmosphere.
 
 **Causes & Mechanisms:**
@@ -158,9 +155,8 @@ Climate change refers to long-term shifts in global or regional climate patterns
 - Early warning systems for extreme weather events"""
             
         elif any(term in query_lower for term in ['programming', 'coding', 'software', 'development', 'python', 'javascript']):
-            knowledge_addition = """
+            knowledge_addition = """**Software Development**
 
-**Software Development Knowledge:**
 Software development is the process of creating, designing, deploying, and maintaining software applications and systems.
 
 **Programming Languages & Use Cases:**
@@ -185,9 +181,8 @@ Software development is the process of creating, designing, deploying, and maint
 - Design patterns for reusable and scalable solutions"""
             
         elif any(term in query_lower for term in ['data science', 'analytics', 'statistics', 'data analysis', 'big data']):
-            knowledge_addition = """
+            knowledge_addition = """**Data Science & Analytics**
 
-**Data Science & Analytics Knowledge:**
 Data science is an interdisciplinary field that uses scientific methods, processes, algorithms, and systems to extract knowledge and insights from structured and unstructured data.
 
 **Data Science Process:**
@@ -216,9 +211,8 @@ Data science is an interdisciplinary field that uses scientific methods, process
             
         # Add more general knowledge domains
         elif any(term in query_lower for term in ['business', 'marketing', 'finance', 'economics', 'management']):
-            knowledge_addition = """
+            knowledge_addition = """**Business & Economics**
 
-**Business & Economics Knowledge:**
 Business involves the creation, exchange, and management of value through goods and services.
 
 **Core Business Functions:**
@@ -242,9 +236,8 @@ Business involves the creation, exchange, and management of value through goods 
 - Subscription and platform business models"""
         
         elif any(term in query_lower for term in ['health', 'medicine', 'biology', 'healthcare', 'medical']):
-            knowledge_addition = """
+            knowledge_addition = """**Health & Medical Sciences**
 
-**Health & Medical Sciences:**
 Healthcare encompasses the prevention, diagnosis, treatment, and management of illness and disease.
 
 **Medical Specialties:**
@@ -267,9 +260,8 @@ Healthcare encompasses the prevention, diagnosis, treatment, and management of i
 - Precision medicine and personalized treatment approaches"""
         
         elif any(term in query_lower for term in ['education', 'learning', 'teaching', 'school', 'university']):
-            knowledge_addition = """
+            knowledge_addition = """**Education & Learning Sciences**
 
-**Education & Learning Sciences:**
 Education is the process of facilitating learning and skill development through instruction and experience.
 
 **Educational Approaches:**
@@ -289,38 +281,32 @@ Education is the process of facilitating learning and skill development through 
 - Educational apps and gamification
 - Virtual and augmented reality in education
 - AI-powered adaptive learning systems"""
-        # Provide direct, comprehensive answers
+        # Provide well-formatted, direct answers
         if knowledge_addition:
-            enhanced_context = f"**Direct Answer:**{knowledge_addition}"
-            enhanced_context += "\n\n**Knowledge Sources:**"
-            enhanced_context += "\n- Internal knowledge base"
-            enhanced_context += "\n- Established domain knowledge"
-            enhanced_context += "\n- General principles and facts"
+            # Clean up formatting and make response more readable
+            enhanced_context = knowledge_addition.strip()
             
             # If there's also document context, add it
-            if context and context.strip():
-                enhanced_context += "\n- User documents"
-                enhanced_context += f"\n\n**From Your Documents:** {context[:300]}..."
+            if context and context.strip() and "From " in context:
+                enhanced_context += f"\n\n**From Your Documents:**\n{context[:400]}"
+                
         elif context and context.strip():
             # Use document context as primary answer
-            enhanced_context = f"**Answer Based on Your Documents:**\n{context}"
-            enhanced_context += "\n\n**Sources:** Your uploaded documents"
+            enhanced_context = f"**Answer Based on Your Documents:**\n\n{context}"
+            
         else:
-            # General knowledge response for topics not specifically covered
-            enhanced_context = f"""**Answer for: {query}**
+            # Provide a helpful response for any question
+            enhanced_context = f"""**Answer:**
 
-I can provide comprehensive information on this topic from my knowledge base. My expertise covers:
+I can help explain this topic using my knowledge base which covers:
 
-- **Science & Technology**: AI, programming, data science, engineering, computer systems
-- **Environment**: Climate change, renewable energy, sustainability, conservation
-- **Business & Economics**: Management, finance, marketing, entrepreneurship
-- **Health & Medicine**: Healthcare systems, medical research, public health
-- **Education**: Learning theories, teaching methods, educational technology
-- **And many other subjects**
+• **Science & Technology** - AI, programming, data science, engineering
+• **Environment & Energy** - Climate change, renewable energy, sustainability  
+• **Business & Economics** - Management, finance, marketing, strategy
+• **Health & Medicine** - Healthcare systems, medical research, public health
+• **Education & Learning** - Teaching methods, educational technology
 
-Based on your question, I can give you detailed explanations with examples, practical applications, and relevant context.
-
-**Knowledge Sources:** Internal knowledge base, domain expertise, established principles"""
+Please ask me about any specific topic and I'll provide detailed explanations with examples and practical context."""
             
         return enhanced_context
     
