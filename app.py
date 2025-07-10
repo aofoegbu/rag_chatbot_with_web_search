@@ -106,6 +106,9 @@ if prompt := st.chat_input("What would you like to know?"):
                 # Generate response with context
                 response = st.session_state.model_handler.generate_response(prompt, context)
                 
+                # Store conversation in database
+                st.session_state.db_manager.store_conversation(prompt, response, context)
+                
                 # Display response
                 st.markdown(response)
                 
@@ -156,4 +159,66 @@ except:
     st.sidebar.markdown("🟡 **Model:** Basic mode")
     st.sidebar.markdown("🟡 **Embeddings:** Simple matching")
 
-st.sidebar.markdown("💾 **Database:** SQLite")
+db_type = st.session_state.db_manager.get_database_type()
+st.sidebar.markdown(f"💾 **Database:** {db_type}")
+
+# Add database statistics
+if st.sidebar.button("📊 Show Database Stats"):
+    stats = st.session_state.db_manager.get_database_stats()
+    if stats:
+        st.sidebar.markdown("### Database Statistics")
+        st.sidebar.metric("Documents", stats.get('unique_documents', 0))
+        st.sidebar.metric("Text Chunks", stats.get('total_chunks', 0))
+        st.sidebar.metric("Conversations", stats.get('total_conversations', 0))
+
+# Add comprehensive testing section
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 🧪 System Testing")
+
+if st.sidebar.button("🔍 Test All Features"):
+    with st.sidebar.expander("Test Results", expanded=True):
+        # Test database connection
+        try:
+            test_count = st.session_state.db_manager.get_document_count()
+            st.sidebar.success(f"✅ Database: Connected ({test_count} docs)")
+        except Exception as e:
+            st.sidebar.error(f"❌ Database: {e}")
+        
+        # Test model loading
+        try:
+            test_response = st.session_state.model_handler.generate_response("Hello")
+            if test_response:
+                st.sidebar.success("✅ Model: Working")
+            else:
+                st.sidebar.warning("⚠️ Model: Limited functionality")
+        except Exception as e:
+            st.sidebar.error(f"❌ Model: {e}")
+        
+        # Test embedding system
+        try:
+            test_embedding = st.session_state.rag_system.get_embedding("test")
+            if test_embedding is not None and len(test_embedding) > 0:
+                st.sidebar.success("✅ Embeddings: Working")
+            else:
+                st.sidebar.warning("⚠️ Embeddings: Basic mode")
+        except Exception as e:
+            st.sidebar.error(f"❌ Embeddings: {e}")
+        
+        # Test RAG system
+        try:
+            test_context, test_sources = st.session_state.rag_system.get_relevant_context("test query")
+            st.sidebar.success("✅ RAG System: Working")
+        except Exception as e:
+            st.sidebar.error(f"❌ RAG System: {e}")
+
+# Add conversation history viewer
+if st.sidebar.button("📜 View Recent Conversations"):
+    recent_conversations = st.session_state.db_manager.get_recent_conversations(5)
+    if recent_conversations:
+        with st.sidebar.expander("Recent Conversations", expanded=True):
+            for i, (user_msg, assistant_msg) in enumerate(recent_conversations, 1):
+                st.sidebar.markdown(f"**{i}. User:** {user_msg[:50]}...")
+                st.sidebar.markdown(f"**Assistant:** {assistant_msg[:50]}...")
+                st.sidebar.markdown("---")
+    else:
+        st.sidebar.info("No conversations found in database")

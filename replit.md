@@ -1,8 +1,8 @@
-# RAG Chat Assistant
+# Ogelo RAG Chat Assistant
 
 ## Overview
 
-This is a Retrieval-Augmented Generation (RAG) chat assistant built with Streamlit. The application allows users to upload documents (PDF or text files) to build a knowledge base and then ask questions about the content. It uses sentence transformers for embeddings, SQLite for storage, and a language model for generating responses.
+Ogelo RAG Chat Assistant is an advanced Retrieval-Augmented Generation (RAG) chat system built with Streamlit. The application allows users to upload documents to build a knowledge base and ask questions about content. It features dual database support (PostgreSQL/SQLite), adaptive ML models with fallback systems, comprehensive testing tools, and conversation history tracking.
 
 ## User Preferences
 
@@ -21,18 +21,33 @@ Preferred communication style: Simple, everyday language.
 - **CPU-Optimized Model Loading**: Uses quantized models with CPU optimization for running on resource-constrained environments
 
 ### Data Storage Solutions
-- **SQLite Database**: Two main tables:
+- **Dual Database Support**: 
+  - **PostgreSQL**: Primary choice with auto-detection, better for scalability
+  - **SQLite**: Fallback option, file-based for simplicity
+- **Database Tables**:
   - `documents`: Stores document chunks with embeddings and metadata
-  - `conversations`: Stores chat history with context information
-- **BLOB Storage**: Embeddings are serialized using pickle and stored as binary data
-- **File-based Persistence**: Database file (`rag_database.db`) persists across sessions
+  - `conversations`: Stores chat history with context information for learning
+- **BLOB Storage**: Embeddings serialized using pickle and stored as binary data
+- **Auto-Detection**: System automatically chooses PostgreSQL if available, falls back to SQLite
+
+## Recent Changes (July 2025)
+- **Added PostgreSQL Support**: Dual database system with auto-detection
+- **Enhanced Testing Suite**: Comprehensive feature testing with visual feedback
+- **Conversation Storage**: All interactions stored in database for history tracking
+- **Database Statistics**: Real-time metrics display for system monitoring
+- **Improved UI**: Better status indicators and system information display
 
 ## Key Components
 
-### 1. Database Manager (`database.py`)
-- **Purpose**: Handles all database operations including initialization, storage, and retrieval
-- **Key Features**: Document chunk storage with embeddings, conversation logging, similarity search capabilities
-- **Design Choice**: SQLite for simplicity and portability, avoiding complex database setup
+### 1. Database Manager (`database.py` + `postgres_database.py`)
+- **Purpose**: Handles all database operations with dual-backend support
+- **Key Features**: 
+  - Auto-detection between PostgreSQL and SQLite
+  - Document chunk storage with embeddings
+  - Conversation logging and history retrieval
+  - Comprehensive statistics and monitoring
+  - Graceful fallback systems
+- **Design Choice**: PostgreSQL for production, SQLite for development/fallback
 
 ### 2. Document Processor (`document_processor.py`)
 - **Purpose**: Extracts and processes text from uploaded documents
@@ -53,7 +68,12 @@ Preferred communication style: Simple, everyday language.
 ### 5. Main Application (`app.py`)
 - **Purpose**: Streamlit interface orchestrating all components
 - **State Management**: Initializes and maintains all system components in session state
-- **User Interface**: Clean sidebar for document management and main area for chat
+- **User Interface**: 
+  - Clean sidebar for document management and system monitoring
+  - Main chat area with source citations
+  - Comprehensive testing suite integrated into sidebar
+  - Real-time system status indicators
+  - Database statistics and conversation history viewer
 
 ## Data Flow
 
@@ -65,7 +85,8 @@ Preferred communication style: Simple, everyday language.
 6. **Query Processing**: User questions are embedded and compared against stored chunks
 7. **Context Retrieval**: Most similar chunks are retrieved as context
 8. **Response Generation**: Language model generates response using retrieved context
-9. **Conversation Logging**: Exchanges are stored for future reference
+9. **Conversation Logging**: All exchanges automatically stored in database with context
+10. **System Monitoring**: Real-time testing and statistics available through UI
 
 ## External Dependencies
 

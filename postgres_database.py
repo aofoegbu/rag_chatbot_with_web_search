@@ -1,82 +1,75 @@
-import sqlite3
+import os
+import psycopg2
 import numpy as np
 import pickle
-import os
 from typing import List, Tuple, Optional
+import logging
 
-# Try to import PostgreSQL support
-try:
-    import psycopg2
-    from postgres_database import PostgreSQLManager
-    POSTGRES_AVAILABLE = True
-except ImportError:
-    POSTGRES_AVAILABLE = False
-
-class DatabaseManager:
-    def __init__(self, db_path: str = "rag_database.db", use_postgres: bool = None):
-        """Initialize database manager with SQLite or PostgreSQL."""
-        # Auto-detect database type if not specified
-        if use_postgres is None:
-            use_postgres = POSTGRES_AVAILABLE and os.getenv('DATABASE_URL') is not None
-        
-        self.use_postgres = use_postgres
-        
-        if self.use_postgres and POSTGRES_AVAILABLE:
-            try:
-                self.postgres_manager = PostgreSQLManager()
-                print("Using PostgreSQL database")
-            except Exception as e:
-                print(f"Failed to connect to PostgreSQL: {e}")
-                print("Falling back to SQLite")
-                self.use_postgres = False
-                self.db_path = db_path
-                self.init_database()
-        else:
-            self.use_postgres = False
-            self.db_path = db_path
-            self.init_database()
+class PostgreSQLManager:
+    def __init__(self):
+        """Initialize PostgreSQL database manager."""
+        self.connection_string = os.getenv('DATABASE_URL')
+        if not self.connection_string:
+            raise Exception("PostgreSQL DATABASE_URL not found in environment variables")
+        self.init_database()
+    
+    def get_connection(self):
+        """Get a database connection."""
+        return psycopg2.connect(self.connection_string)
     
     def init_database(self):
-        """Initialize the SQLite database with required tables."""
-        if self.use_postgres:
-            return  # PostgreSQL initialization is handled in PostgreSQLManager
+        """Initialize the database with required tables."""
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
             
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        # Create documents table
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS documents (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                filename TEXT NOT NULL,
-                content TEXT NOT NULL,
-                chunk_index INTEGER NOT NULL,
-                embedding BLOB NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # Create conversations table
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS conversations (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_message TEXT NOT NULL,
-                assistant_response TEXT NOT NULL,
-                context_used TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        conn.commit()
-        conn.close()
+            # Create documents table
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS documents (
+                    id SERIAL PRIMARY KEY,
+                    filename TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    chunk_index INTEGER NOT NULL,
+                    embedding BYTEA NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            
+            # Create conversations table
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS conversations (
+                    id SERIAL PRIMARY KEY,
+                    user_message TEXT NOT NULL,
+                    assistant_response TEXT NOT NULL,
+                    context_used TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            
+            # Create index on filename for faster queries
+            cursor.execute('''
+                CREATE INDEX IF NOT EXISTS idx_documents_filename 
+                ON documents(filename)
+            ''')
+            
+            # Create index on created_at for faster conversation retrieval
+            cursor.execute('''
+                CREATE INDEX IF NOT EXISTS idx_conversations_created_at 
+                ON conversations(created_at DESC)
+            ''')
+            
+            conn.commit()
+            conn.close()
+            print("PostgreSQL database initialized successfully!")
+            
+        except Exception as e:
+            print(f"Error initializing PostgreSQL database: {e}")
+            raise
     
     def store_document_chunk(self, filename: str, content: str, chunk_index: int, embedding: np.ndarray) -> bool:
         """Store a document chunk with its embedding."""
-        if self.use_postgres:
-            return self.postgres_manager.store_document_chunk(filename, content, chunk_index, embedding)
-            
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = self.get_connection()
             cursor = conn.cursor()
             
             # Serialize embedding
@@ -84,7 +77,7 @@ class DatabaseManager:
             
             cursor.execute('''
                 INSERT INTO documents (filename, content, chunk_index, embedding)
-                VALUES (?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s)
             ''', (filename, content, chunk_index, embedding_blob))
             
             conn.commit()
@@ -96,11 +89,8 @@ class DatabaseManager:
     
     def search_similar_chunks(self, query_embedding: np.ndarray, top_k: int = 5) -> List[Tuple[str, str, float]]:
         """Search for similar document chunks using cosine similarity."""
-        if self.use_postgres:
-            return self.postgres_manager.search_similar_chunks(query_embedding, top_k)
-            
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = self.get_connection()
             cursor = conn.cursor()
             
             cursor.execute('SELECT filename, content, embedding FROM documents')
@@ -133,16 +123,13 @@ class DatabaseManager:
     
     def store_conversation(self, user_message: str, assistant_response: str, context_used: str = None) -> bool:
         """Store a conversation exchange."""
-        if self.use_postgres:
-            return self.postgres_manager.store_conversation(user_message, assistant_response, context_used)
-            
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = self.get_connection()
             cursor = conn.cursor()
             
             cursor.execute('''
                 INSERT INTO conversations (user_message, assistant_response, context_used)
-                VALUES (?, ?, ?)
+                VALUES (%s, %s, %s)
             ''', (user_message, assistant_response, context_used))
             
             conn.commit()
@@ -154,11 +141,8 @@ class DatabaseManager:
     
     def get_document_count(self) -> int:
         """Get the total number of unique documents."""
-        if self.use_postgres:
-            return self.postgres_manager.get_document_count()
-            
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = self.get_connection()
             cursor = conn.cursor()
             
             cursor.execute('SELECT COUNT(DISTINCT filename) FROM documents')
@@ -169,13 +153,24 @@ class DatabaseManager:
             print(f"Error getting document count: {e}")
             return 0
     
+    def get_total_chunks(self) -> int:
+        """Get the total number of document chunks."""
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute('SELECT COUNT(*) FROM documents')
+            count = cursor.fetchone()[0]
+            conn.close()
+            return count
+        except Exception as e:
+            print(f"Error getting chunk count: {e}")
+            return 0
+    
     def clear_documents(self) -> bool:
         """Clear all documents from the database."""
-        if self.use_postgres:
-            return self.postgres_manager.clear_documents()
-            
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = self.get_connection()
             cursor = conn.cursor()
             
             cursor.execute('DELETE FROM documents')
@@ -188,18 +183,15 @@ class DatabaseManager:
     
     def get_recent_conversations(self, limit: int = 10) -> List[Tuple[str, str]]:
         """Get recent conversations."""
-        if self.use_postgres:
-            return self.postgres_manager.get_recent_conversations(limit)
-            
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = self.get_connection()
             cursor = conn.cursor()
             
             cursor.execute('''
                 SELECT user_message, assistant_response 
                 FROM conversations 
                 ORDER BY created_at DESC 
-                LIMIT ?
+                LIMIT %s
             ''', (limit,))
             
             results = cursor.fetchall()
@@ -209,17 +201,10 @@ class DatabaseManager:
             print(f"Error getting recent conversations: {e}")
             return []
     
-    def get_database_type(self) -> str:
-        """Get the type of database being used."""
-        return "PostgreSQL" if self.use_postgres else "SQLite"
-    
     def get_database_stats(self) -> dict:
         """Get comprehensive database statistics."""
-        if self.use_postgres:
-            return self.postgres_manager.get_database_stats()
-        
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = self.get_connection()
             cursor = conn.cursor()
             
             # Get document stats
@@ -232,13 +217,26 @@ class DatabaseManager:
             cursor.execute('SELECT COUNT(*) FROM conversations')
             total_conversations = cursor.fetchone()[0]
             
+            # Get recent activity
+            cursor.execute('''
+                SELECT MAX(created_at) FROM documents
+            ''')
+            last_document = cursor.fetchone()[0]
+            
+            cursor.execute('''
+                SELECT MAX(created_at) FROM conversations
+            ''')
+            last_conversation = cursor.fetchone()[0]
+            
             conn.close()
             
             return {
                 'unique_documents': unique_docs,
                 'total_chunks': total_chunks,
                 'total_conversations': total_conversations,
-                'database_type': 'SQLite'
+                'last_document_upload': last_document,
+                'last_conversation': last_conversation,
+                'database_type': 'PostgreSQL'
             }
             
         except Exception as e:
