@@ -39,6 +39,10 @@ Preferred communication style: Simple, everyday language.
 - **CSV File Support**: Added pandas-based CSV processing with structured data extraction
 - **Previous Context Integration**: Load and integrate conversation history into chat sessions
 - **Enhanced RAG Context**: Include conversation history in response generation for continuity
+- **Image OCR Support**: Added pytesseract integration for extracting text from images (JPG, PNG, GIF, BMP, TIFF)
+- **URL Content Extraction**: Implemented web scraping with trafilatura and BeautifulSoup for processing website content
+- **Multi-format Document Support**: Now supports PDF, text, CSV, images, and web URLs
+- **Enhanced PDF Processing**: Improved metadata extraction and error handling for PDF files
 
 ## Key Components
 
@@ -53,13 +57,17 @@ Preferred communication style: Simple, everyday language.
 - **Design Choice**: PostgreSQL for production, SQLite for development/fallback
 
 ### 2. Document Processor (`document_processor.py`)
-- **Purpose**: Extracts and processes text from uploaded documents
+- **Purpose**: Extracts and processes text from uploaded documents and web content
 - **Supported Formats**: 
-  - PDF files (via PyPDF2)
-  - Plain text files (.txt)
+  - PDF files (via PyPDF2) with metadata extraction
+  - Plain text files (.txt) with multi-encoding support
   - CSV files (via pandas) with structured data extraction and statistics
+  - Image files (JPG, PNG, GIF, BMP, TIFF) with OCR text extraction via pytesseract
+  - Web URLs with content extraction using trafilatura and BeautifulSoup fallback
 - **Text Chunking**: Splits documents into 500-character chunks with 50-character overlap for better context retrieval
 - **CSV Processing**: Converts tabular data to searchable text with row details and numeric summaries
+- **OCR Processing**: Extracts text from images with metadata and error handling
+- **Web Scraping**: Intelligent content extraction from websites with title and timestamp metadata
 
 ### 3. RAG System (`rag_system.py`)
 - **Purpose**: Handles embedding generation and similarity search for retrieval
@@ -86,11 +94,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Data Flow
 
-1. **Document Upload**: User uploads PDF/text file through Streamlit interface
-2. **Text Extraction**: Document processor extracts and cleans text content
+1. **Content Input**: User uploads documents (PDF, text, CSV, images) or provides URLs through Streamlit interface
+2. **Text Extraction**: Document processor extracts and cleans text content using appropriate methods:
+   - PDF: PyPDF2 with metadata extraction
+   - Images: OCR with pytesseract
+   - URLs: Web scraping with trafilatura/BeautifulSoup
+   - CSV: Structured data conversion with pandas
 3. **Chunking**: Text is split into overlapping chunks for better retrieval
 4. **Embedding Generation**: Each chunk is converted to vector embedding using sentence transformer
-5. **Storage**: Chunks and embeddings are stored in SQLite database
+5. **Storage**: Chunks and embeddings are stored in PostgreSQL or SQLite database
 6. **Query Processing**: User questions are embedded and compared against stored chunks
 7. **Context Retrieval**: Most similar chunks are retrieved as context
 8. **Response Generation**: Language model generates response using retrieved context
@@ -105,8 +117,13 @@ Preferred communication style: Simple, everyday language.
 - **torch**: PyTorch backend for model operations
 
 ### Document Processing
-- **PyPDF2**: PDF text extraction
+- **PyPDF2**: PDF text extraction with metadata support
 - **numpy**: Numerical operations for embeddings
+- **pillow**: Image processing and format conversion
+- **pytesseract**: OCR text extraction from images
+- **requests**: HTTP requests for web content fetching
+- **beautifulsoup4**: HTML parsing and content extraction
+- **trafilatura**: Advanced web content extraction
 
 ### Web Framework
 - **streamlit**: Complete web interface framework

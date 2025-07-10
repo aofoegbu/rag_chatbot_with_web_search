@@ -33,23 +33,29 @@ st.sidebar.header("Upload Documents")
 
 # Check available file processing capabilities
 try:
-    from document_processor import PDF_AVAILABLE, PANDAS_AVAILABLE
+    from document_processor import PDF_AVAILABLE, PANDAS_AVAILABLE, OCR_AVAILABLE, WEB_SCRAPING_AVAILABLE
     file_types = ["txt"]
     help_parts = ["text files"]
     
     if PDF_AVAILABLE:
-        file_types.append("pdf")
+        file_types.extend(["pdf"])
         help_parts.append("PDF")
     else:
         st.sidebar.info("📄 PDF support requires PyPDF2")
         
     if PANDAS_AVAILABLE:
-        file_types.append("csv")
+        file_types.extend(["csv"])
         help_parts.append("CSV")
     else:
         st.sidebar.info("📊 CSV support requires pandas")
+        
+    if OCR_AVAILABLE:
+        file_types.extend(["jpg", "jpeg", "png", "gif", "bmp", "tiff"])
+        help_parts.append("images (OCR)")
+    else:
+        st.sidebar.info("🖼️ Image OCR requires tesseract and pytesseract")
     
-    help_text = f"Upload {', '.join(help_parts)} files to add to the knowledge base"
+    help_text = f"Upload {', '.join(help_parts)} to add to the knowledge base"
 except:
     file_types = ["txt"]
     help_text = "Upload text files to add to the knowledge base"
@@ -87,6 +93,33 @@ if uploaded_file is not None:
 # Display document count
 doc_count = st.session_state.db_manager.get_document_count()
 st.sidebar.metric("Documents in Knowledge Base", doc_count)
+
+# URL Processing Section
+st.sidebar.markdown("---")
+st.sidebar.header("Process URL Content")
+
+url_input = st.sidebar.text_input(
+    "Enter URL to extract content:",
+    placeholder="https://example.com/article",
+    help="Extract and process text content from web pages"
+)
+
+if url_input and st.sidebar.button("Process URL"):
+    if WEB_SCRAPING_AVAILABLE:
+        with st.sidebar.spinner("Fetching and processing URL content..."):
+            try:
+                success = st.session_state.doc_processor.process_url(url_input)
+                if success:
+                    st.sidebar.success("URL content processed successfully!")
+                    doc_count = st.session_state.db_manager.get_document_count()
+                    st.sidebar.info(f"Knowledge base now contains {doc_count} documents")
+                else:
+                    st.sidebar.error("Failed to process URL content. Check the console for details.")
+            except Exception as e:
+                st.sidebar.error(f"Error processing URL: {str(e)}")
+                print(f"URL processing error: {str(e)}")
+    else:
+        st.sidebar.error("Web scraping is not available. Please install required packages.")
 
 # Clear knowledge base button
 if st.sidebar.button("Clear Knowledge Base", type="secondary"):
