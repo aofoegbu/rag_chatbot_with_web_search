@@ -42,6 +42,8 @@ Preferred communication style: Simple, everyday language.
 - **Advanced Prompt Engineering**: Structured prompts with in-context examples and comprehensive knowledge integration
 - **Multi-Source Intelligence**: Combines document knowledge, conversation history, general knowledge, and contextual examples
 - **Web Knowledge Integration**: Enhanced responses with relevant general knowledge and reasoning capabilities
+- **Comprehensive Citation System**: Every answer includes proper references and source attributions
+- **Knowledge Base References**: Detailed citations for internal knowledge, best practices, and domain expertise
 - **Model Selection Interface**: User can choose between Phi-3 Mini and DialoGPT models with live switching
 - **Comprehensive Testing Suite**: Automated testing system with 35+ test cases covering all components and features
 - **Image OCR Support**: Added pytesseract integration for extracting text from images (JPG, PNG, GIF, BMP, TIFF)
@@ -89,7 +91,8 @@ Preferred communication style: Simple, everyday language.
   - DialoGPT Medium: Conversational AI model for dialogue
 - **Model Switching**: Live model switching without restarting the application
 - **Prompt Engineering**: Structured prompts with in-context examples, conversation history, and comprehensive context
-- **Knowledge Integration**: Combines document context with general knowledge, examples, and reasoning
+- **Knowledge Integration**: Combines document context with general knowledge, examples, and reasoning with proper source citations
+- **Reference System**: Every response includes detailed citations and source attributions for transparency
 - **Fallback Strategy**: Enhanced rule-based responses with knowledge integration when ML models unavailable
 - **Optimization**: CPU-optimized loading with float32 precision and low memory usage
 

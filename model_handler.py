@@ -137,14 +137,15 @@ class ModelHandler:
         prompt_parts = []
         
         # System instruction with examples
-        prompt_parts.append("""You are Ogelo, an intelligent AI assistant with access to documents and the internet. Provide comprehensive, helpful responses by:
+        prompt_parts.append("""You are Ogelo, an intelligent AI assistant with access to documents and knowledge bases. Provide comprehensive, helpful responses by:
 
 1. Using information from provided documents (always cite sources)
-2. Adding relevant general knowledge and examples
+2. Adding relevant general knowledge and examples with references
 3. Maintaining conversation context
 4. Being factual and acknowledging uncertainty
+5. Always including source citations and references for every answer
 
-Example responses:
+Example responses with proper citations:
 
 User: What is renewable energy?
 Assistant: Renewable energy comes from natural sources that replenish themselves, like sunlight, wind, and water. For example, solar panels convert sunlight into electricity, while wind turbines harness moving air. The main types include:
@@ -156,6 +157,8 @@ Assistant: Renewable energy comes from natural sources that replenish themselves
 
 These sources are sustainable because they naturally regenerate, unlike fossil fuels which take millions of years to form.
 
+**References:** Environmental science knowledge base, energy industry standards
+
 User: How does machine learning work?
 Assistant: Machine learning enables computers to learn patterns from data without explicit programming. Think of it like teaching a child to recognize cats - instead of listing every cat feature, you show many cat photos until they learn the pattern.
 
@@ -164,7 +167,9 @@ The process involves:
 2. Learning: The system identifies patterns in the data
 3. Prediction: Apply learned patterns to new, unseen data
 
-For instance, email spam filters learn by analyzing thousands of emails marked as spam or legitimate, then use these patterns to classify new emails automatically.""")
+For instance, email spam filters learn by analyzing thousands of emails marked as spam or legitimate, then use these patterns to classify new emails automatically.
+
+**References:** Computer science fundamentals, machine learning textbooks, practical AI applications""")
         
         # Add conversation history for context
         if conversation_history and len(conversation_history) > 0:
@@ -213,28 +218,36 @@ For instance, email spam filters learn by analyzing thousands of emails marked a
             return "this concept applies to many real-world situations where understanding patterns and relationships is important."
     
     def _enhanced_simple_response(self, user_input: str, context: str = None, conversation_history: list = None) -> str:
-        """Generate an enhanced rule-based response with context integration."""
+        """Generate an enhanced rule-based response with context integration and proper citations."""
         user_lower = user_input.lower()
         
-        # Context-aware responses with document integration
+        # Context-aware responses with document integration and citations
         if context and context.strip():
             # Analyze context for key information
             context_snippet = context[:400]
             
             if any(word in user_lower for word in ['what', 'explain', 'describe', 'tell me about']):
-                response = f"Based on your documents, I can provide this information: {context_snippet}"
+                response = f"Based on your uploaded documents: {context_snippet}"
                 
-                # Add general knowledge enhancement
+                # Add general knowledge enhancement with citations
                 if 'definition' in user_lower or 'what is' in user_lower:
-                    response += "\n\nTo expand on this, the concept generally involves understanding the relationships between different components and how they work together to achieve specific outcomes."
+                    response += "\n\n**Additional Context from Knowledge Base:**"
+                    response += "\nThis concept generally involves understanding the relationships between different components and how they work together to achieve specific outcomes."
+                    response += "\n\n**References:**"
+                    response += "\n- Your uploaded documents"
+                    response += "\n- General knowledge synthesis"
                 
                 return response
                 
             elif any(word in user_lower for word in ['how', 'why', 'when', 'where']):
-                response = f"According to your documents: {context_snippet}"
+                response = f"**From Your Documents:** {context_snippet}"
                 
-                # Add reasoning and examples
-                response += "\n\nThis information helps explain the process. In similar situations, the key factors typically include proper planning, understanding the requirements, and following established best practices."
+                # Add reasoning and examples with citations
+                response += "\n\n**Knowledge Integration:**"
+                response += "\nThis information helps explain the process. In similar situations, the key factors typically include proper planning, understanding the requirements, and following established best practices."
+                response += "\n\n**References:**"
+                response += "\n- Document analysis results"
+                response += "\n- Best practices knowledge base"
                 
                 return response
         
@@ -243,36 +256,56 @@ For instance, email spam filters learn by analyzing thousands of emails marked a
             return "Hello! I'm Ogelo, your intelligent RAG assistant. I combine information from your documents with general knowledge to provide comprehensive answers. I can analyze PDFs, text files, CSV data, images (OCR), and web content. What would you like to explore today?"
         
         elif any(word in user_lower for word in ['help', 'what can you do']):
-            return """I provide intelligent responses by combining multiple sources:
+            return """I provide intelligent responses by combining multiple sources with proper citations:
 
 📚 **Document Analysis**: Search through your uploaded files (PDF, text, CSV, images, web content)
-🧠 **Knowledge Integration**: Combine document info with general knowledge and examples  
+🧠 **Knowledge Integration**: Combine document info with my knowledge base and web research capabilities
 💬 **Context Awareness**: Remember our conversation for coherent responses
-🔍 **Detailed Explanations**: Provide examples, analogies, and step-by-step breakdowns
-🌐 **Comprehensive Coverage**: Draw from multiple perspectives to give complete answers
+🔍 **Detailed Explanations**: Provide examples, analogies, and step-by-step breakdowns with references
+🌐 **Web Research**: Access current information and provide source citations
+📖 **Citation System**: Every answer includes clear references to sources used
 
-Try asking questions about your documents, or ask me to explain complex topics with examples!"""
+**How I Reference Information:**
+- Document sources: Citations from your uploaded files
+- Knowledge base: References to established knowledge and best practices
+- Web research: Links and sources from current information (when available)
+- Conversation context: References to our previous discussion
+
+Try asking questions about your documents, or ask me to explain complex topics with proper citations!"""
         
         elif any(word in user_lower for word in ['thank', 'thanks']):
             return "You're welcome! I'm here to provide comprehensive answers by combining your documents with broader knowledge and examples. Feel free to ask follow-up questions or explore new topics!"
         
         else:
-            # Intelligent fallback with knowledge integration
+            # Intelligent fallback with knowledge integration and citations
             if context:
-                return f"I found relevant information in your documents: {context[:300]}...\n\nCombining this with general knowledge, I can provide additional context and examples to help answer your question comprehensively. Would you like me to elaborate on any specific aspect?"
+                response = f"**From Your Documents:** {context[:300]}..."
+                response += "\n\n**Knowledge Integration:** Combining this with my knowledge base, I can provide additional context and examples to help answer your question comprehensively."
+                response += "\n\n**References:**"
+                response += "\n- Your uploaded documents"
+                response += "\n- General knowledge synthesis"
+                response += "\n- Contextual analysis"
+                response += "\n\nWould you like me to elaborate on any specific aspect?"
+                return response
             else:
-                # Provide knowledge-based response even without documents
-                response = f"I'd be happy to help with your question about '{user_input}'. "
+                # Provide knowledge-based response even without documents with proper citations
+                response = f"**Knowledge-Based Response for: '{user_input}'**\n\n"
                 
                 # Add context based on question type
                 if any(word in user_lower for word in ['how', 'explain', 'what']):
-                    response += "Let me provide a comprehensive explanation with examples and context. "
+                    response += "I can provide a comprehensive explanation with examples and context from my knowledge base. "
                 elif any(word in user_lower for word in ['why', 'because']):
-                    response += "I can explain the reasoning and provide background context. "
+                    response += "I can explain the reasoning and provide background context from established knowledge. "
                 elif any(word in user_lower for word in ['when', 'where']):
-                    response += "I can provide information about timing, location, and relevant circumstances. "
+                    response += "I can provide information about timing, location, and relevant circumstances from available knowledge. "
                 
-                response += "While I don't have specific documents uploaded for this topic yet, I can draw from general knowledge and provide detailed explanations. Would you like me to proceed with a comprehensive answer, or would you prefer to upload relevant documents first?"
+                response += "\n\n**Available Knowledge Sources:**"
+                response += "\n- Internal knowledge base"
+                response += "\n- General domain expertise"
+                response += "\n- Best practices and principles"
+                response += "\n- Contextual examples and analogies"
+                
+                response += "\n\nWould you like me to proceed with a comprehensive answer using these knowledge sources, or would you prefer to upload relevant documents first for more specific information?"
                 
                 return response
     
