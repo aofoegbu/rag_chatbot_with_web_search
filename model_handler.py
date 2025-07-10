@@ -288,24 +288,33 @@ Try asking questions about your documents, or ask me to explain complex topics w
                 response += "\n\nWould you like me to elaborate on any specific aspect?"
                 return response
             else:
-                # Provide knowledge-based response even without documents with proper citations
-                response = f"**Knowledge-Based Response for: '{user_input}'**\n\n"
+                # Get enhanced knowledge from web search integration
+                from web_search_integration import WebSearchIntegrator
+                integrator = WebSearchIntegrator()
+                enhanced_context = integrator._enhance_with_knowledge(user_input)
                 
-                # Add context based on question type
-                if any(word in user_lower for word in ['how', 'explain', 'what']):
-                    response += "I can provide a comprehensive explanation with examples and context from my knowledge base. "
-                elif any(word in user_lower for word in ['why', 'because']):
-                    response += "I can explain the reasoning and provide background context from established knowledge. "
-                elif any(word in user_lower for word in ['when', 'where']):
-                    response += "I can provide information about timing, location, and relevant circumstances from available knowledge. "
-                
-                response += "\n\n**Available Knowledge Sources:**"
-                response += "\n- Internal knowledge base"
-                response += "\n- General domain expertise"
-                response += "\n- Best practices and principles"
-                response += "\n- Contextual examples and analogies"
-                
-                response += "\n\nI have extensive knowledge across many domains including science, technology, business, health, education, and more. Would you like me to proceed with a comprehensive answer, or would you prefer to upload relevant documents for more specific information?"
+                if enhanced_context and len(enhanced_context) > 100:
+                    # Return the comprehensive knowledge response directly
+                    return enhanced_context
+                else:
+                    # Fallback for edge cases
+                    response = f"**Knowledge-Based Response for: '{user_input}'**\n\n"
+                    
+                    # Add context based on question type
+                    if any(word in user_lower for word in ['how', 'explain', 'what']):
+                        response += "I can provide a comprehensive explanation with examples and context from my knowledge base. "
+                    elif any(word in user_lower for word in ['why', 'because']):
+                        response += "I can explain the reasoning and provide background context from established knowledge. "
+                    elif any(word in user_lower for word in ['when', 'where']):
+                        response += "I can provide information about timing, location, and relevant circumstances from available knowledge. "
+                    
+                    response += "\n\n**Available Knowledge Sources:**"
+                    response += "\n- Internal knowledge base"
+                    response += "\n- General domain expertise"
+                    response += "\n- Best practices and principles"
+                    response += "\n- Contextual examples and analogies"
+                    
+                    response += "\n\nI have extensive knowledge across many domains including science, technology, business, health, education, and more. Would you like me to proceed with a comprehensive answer, or would you prefer to upload relevant documents for more specific information?"
                 
                 return response
     
