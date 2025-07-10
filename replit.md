@@ -31,10 +31,12 @@ Preferred communication style: Simple, everyday language.
 - **Auto-Detection**: System automatically chooses PostgreSQL if available, falls back to SQLite
 
 ## Recent Changes (July 2025)
-- **Fixed Answering Mechanism (Latest)**: Resolved issue where model wasn't showing responses properly
+- **Added Web Search Integration (Latest)**: Implemented Perplexity API for real-time internet information when needed
+- **Smart Search Logic**: System automatically determines when to use web search vs internal knowledge
+- **Web Source Citations**: All web search results include proper source links and references
+- **Fixed Answering Mechanism**: Resolved issue where model wasn't showing responses properly
 - **Improved Response Formatting**: Clean, well-structured answers with clear headings and bullet points
-- **Removed Internet Search Dependencies**: System now relies entirely on internal knowledge base for better reliability
-- **Enhanced Knowledge Coverage**: 8 major domains with comprehensive, detailed responses
+- **Enhanced Knowledge Coverage**: 8 major domains with comprehensive, detailed responses plus web search
 - **Added PostgreSQL Support**: Dual database system with auto-detection
 - **Enhanced Testing Suite**: Comprehensive feature testing with visual feedback
 - **Conversation Storage**: All interactions stored in database for history tracking
@@ -95,7 +97,9 @@ Preferred communication style: Simple, everyday language.
   - DialoGPT Medium: Conversational AI model for dialogue
 - **Model Switching**: Live model switching without restarting the application
 - **Prompt Engineering**: Structured prompts with in-context examples, conversation history, and comprehensive context
-- **Knowledge Integration**: Combines document context with general knowledge, examples, and reasoning with proper source citations
+- **Web Search Integration**: Real-time internet search via Perplexity API for current information
+- **Smart Response Logic**: Automatically determines when to use web search vs internal knowledge
+- **Knowledge Integration**: Combines document context with general knowledge, examples, reasoning, and web sources
 - **Reference System**: Every response includes detailed citations and source attributions for transparency
 - **Fallback Strategy**: Enhanced rule-based responses with knowledge integration when ML models unavailable
 - **Optimization**: CPU-optimized loading with float32 precision and low memory usage

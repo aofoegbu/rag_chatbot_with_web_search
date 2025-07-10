@@ -263,6 +263,15 @@ except:
 db_type = st.session_state.db_manager.get_database_type()
 st.sidebar.markdown(f"💾 **Database:** {db_type}")
 
+# Check web search status
+try:
+    if st.session_state.model_handler.is_web_search_available():
+        st.sidebar.markdown("🌐 **Web Search:** Enabled (Perplexity)")
+    else:
+        st.sidebar.markdown("🟡 **Web Search:** Disabled (API key needed)")
+except:
+    st.sidebar.markdown("🟡 **Web Search:** Not available")
+
 # Add database statistics
 if st.sidebar.button("📊 Show Database Stats"):
     stats = st.session_state.db_manager.get_database_stats()
@@ -331,10 +340,24 @@ if st.sidebar.button("🔍 Test All Features"):
         except Exception as e:
             st.sidebar.error(f"❌ Document Processing: {e}")
             
+        # Test web search integration
+        try:
+            if st.session_state.model_handler.is_web_search_available():
+                success, message = st.session_state.model_handler.test_web_search()
+                if success:
+                    st.sidebar.success("✅ Web Search: Connected")
+                else:
+                    st.sidebar.warning(f"⚠️ Web Search: {message}")
+            else:
+                st.sidebar.info("ℹ️ Web Search: API key needed")
+        except Exception as e:
+            st.sidebar.error(f"❌ Web Search: {e}")
+            
         # Test knowledge integration
         try:
-            from web_search_integration import web_search_integrator
-            enhanced_context, _ = web_search_integrator.search_and_enhance("test query", "")
+            from web_search_integration import WebSearchIntegrator
+            integrator = WebSearchIntegrator()
+            enhanced_context = integrator._enhance_with_knowledge("test query")
             st.sidebar.success("✅ Knowledge Integration: Working")
         except Exception as e:
             st.sidebar.error(f"❌ Knowledge Integration: {e}")

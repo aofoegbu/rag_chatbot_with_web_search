@@ -8,6 +8,13 @@ try:
 except ImportError:
     TRANSFORMERS_AVAILABLE = False
 
+# Import web search capability
+try:
+    from perplexity_search import PerplexitySearch
+    PERPLEXITY_AVAILABLE = True
+except ImportError:
+    PERPLEXITY_AVAILABLE = False
+
 class ModelHandler:
     def __init__(self, model_name: str = "microsoft/Phi-3-mini-4k-instruct"):
         """Initialize the model handler with a quantized LLM."""
@@ -15,6 +22,12 @@ class ModelHandler:
         self.tokenizer = None
         self.model = None
         self.max_length = 2048
+        
+        # Initialize web search capability
+        if PERPLEXITY_AVAILABLE:
+            self.web_search = PerplexitySearch()
+        else:
+            self.web_search = None
         self.available_models = {
             "microsoft/Phi-3-mini-4k-instruct": {
                 "name": "Phi-3 Mini (Recommended)",
@@ -273,7 +286,18 @@ For instance, email spam filters learn by analyzing thousands of emails marked a
         
         # Check for knowledge questions first (before greetings)
         if any(word in user_lower for word in ['what is', 'what are', 'how does', 'how do', 'explain', 'tell me about', 'describe']):
-            # Get enhanced knowledge from web search integration
+            # Try web search first for real-time information
+            if self.web_search and self.web_search.is_available():
+                web_answer, web_sources = self.web_search.enhanced_search(user_input, context)
+                if web_answer and len(web_answer) > 100:
+                    # Format with web sources
+                    if web_sources:
+                        web_answer += f"\n\n**Web Sources:**\n"
+                        for i, source in enumerate(web_sources[:3], 1):
+                            web_answer += f"{i}. {source}\n"
+                    return web_answer
+            
+            # Fallback to internal knowledge
             from web_search_integration import WebSearchIntegrator
             integrator = WebSearchIntegrator()
             enhanced_context = integrator._enhance_with_knowledge(user_input)
@@ -307,6 +331,16 @@ Try asking questions about your documents, or ask me to explain complex topics w
             return "You're welcome! I'm here to provide comprehensive answers by combining your documents with broader knowledge and examples. Feel free to ask follow-up questions or explore new topics!"
         
         else:
+            # Try web search for general questions
+            if self.web_search and self.web_search.is_available():
+                web_answer, web_sources = self.web_search.enhanced_search(user_input, context)
+                if web_answer and len(web_answer) > 50:
+                    if web_sources:
+                        web_answer += f"\n\n**Web Sources:**\n"
+                        for i, source in enumerate(web_sources[:3], 1):
+                            web_answer += f"{i}. {source}\n"
+                    return web_answer
+            
             # Intelligent fallback with knowledge integration and citations
             if context:
                 response = f"**From Your Documents:** {context[:300]}..."
@@ -351,3 +385,13 @@ Try asking questions about your documents, or ask me to explain complex topics w
     def is_model_loaded(self) -> bool:
         """Check if the model is successfully loaded."""
         return self.model is not None and self.tokenizer is not None
+    
+    def is_web_search_available(self) -> bool:
+        """Check if web search functionality is available."""
+        return self.web_search is not None and self.web_search.is_available()
+    
+    def test_web_search(self) -> tuple:
+        """Test web search connection."""
+        if self.web_search:
+            return self.web_search.test_connection()
+        return False, "Web search not initialized"
