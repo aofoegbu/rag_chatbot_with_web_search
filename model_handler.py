@@ -305,7 +305,7 @@ Try asking questions about your documents, or ask me to explain complex topics w
                 response += "\n- Best practices and principles"
                 response += "\n- Contextual examples and analogies"
                 
-                response += "\n\nWould you like me to proceed with a comprehensive answer using these knowledge sources, or would you prefer to upload relevant documents first for more specific information?"
+                response += "\n\nI have extensive knowledge across many domains including science, technology, business, health, education, and more. Would you like me to proceed with a comprehensive answer, or would you prefer to upload relevant documents for more specific information?"
                 
                 return response
     

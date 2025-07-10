@@ -61,69 +61,234 @@ class WebSearchIntegrator:
         query_lower = query.lower()
         knowledge_addition = ""
         
-        # Add relevant general knowledge based on query topics
-        if any(term in query_lower for term in ['machine learning', 'ai', 'artificial intelligence']):
+        # Add comprehensive knowledge based on query topics using model's internal knowledge
+        # Use broad matching to catch related terms and provide comprehensive responses
+        if any(term in query_lower for term in ['machine learning', 'ai', 'artificial intelligence', 'neural network', 'deep learning', 'algorithm', 'model', 'training']):
             knowledge_addition = """
-            
-General Knowledge Context:
-Machine learning is a subset of artificial intelligence that enables computers to learn and improve from data without explicit programming. Key applications include:
-- Natural Language Processing (like this chat system)
-- Computer Vision (image recognition, OCR)
-- Recommendation Systems (Netflix, Amazon)
-- Predictive Analytics (weather, stock market)
-- Autonomous Systems (self-driving cars)
 
-The field has evolved rapidly with deep learning techniques and large language models."""
+**Machine Learning & AI Knowledge:**
+Machine learning is a method of data analysis that automates analytical model building. It's based on the idea that systems can learn from data, identify patterns, and make decisions with minimal human intervention.
+
+**Core Concepts:**
+- **Supervised Learning**: Training on labeled data (classification, regression)
+- **Unsupervised Learning**: Finding hidden patterns in unlabeled data (clustering, dimensionality reduction)
+- **Reinforcement Learning**: Learning through rewards and penalties (game playing, robotics)
+- **Deep Learning**: Neural networks with multiple layers for complex pattern recognition
+
+**Real-World Applications:**
+- Healthcare: Medical diagnosis, drug discovery, personalized treatment
+- Finance: Fraud detection, algorithmic trading, credit scoring
+- Transportation: Autonomous vehicles, route optimization, traffic management
+- Technology: Search engines, recommendation systems, voice assistants
+- Business: Customer segmentation, demand forecasting, supply chain optimization
+
+**Recent Developments:**
+- Large Language Models (GPT, BERT, Claude) for natural language understanding
+- Computer Vision advances in object detection and image generation
+- Generative AI for content creation and code generation"""
             
-        elif any(term in query_lower for term in ['renewable energy', 'solar', 'wind', 'clean energy']):
+        elif any(term in query_lower for term in ['renewable energy', 'solar', 'wind', 'clean energy', 'sustainability']):
             knowledge_addition = """
-            
-General Knowledge Context:
-Renewable energy sources are naturally replenishing and include:
-- Solar: Photovoltaic panels and thermal systems
-- Wind: Onshore and offshore turbines
-- Hydroelectric: Dams and run-of-river systems
-- Geothermal: Earth's internal heat
-- Biomass: Organic materials and waste
 
-These technologies are crucial for reducing greenhouse gas emissions and achieving energy independence."""
+**Renewable Energy & Sustainability:**
+Renewable energy comes from natural sources that are replenished faster than they are consumed, offering a sustainable alternative to fossil fuels.
+
+**Solar Energy:**
+- **Photovoltaic (PV)**: Converts sunlight directly into electricity using semiconductor cells
+- **Solar Thermal**: Uses sunlight to heat water or air for buildings
+- **Concentrated Solar Power**: Uses mirrors to focus sunlight for electricity generation
+- **Efficiency**: Modern panels achieve 20-22% efficiency, with costs dropping 90% since 2010
+
+**Wind Energy:**
+- **Onshore Wind**: Land-based turbines, now cost-competitive with fossil fuels
+- **Offshore Wind**: Higher and more consistent winds, faster growing segment
+- **Technology**: Modern turbines are 150+ meters tall with smart blade control
+- **Capacity Factor**: 35-45% for modern wind farms
+
+**Other Renewable Sources:**
+- **Hydroelectric**: 16% of global electricity, from large dams to micro-hydro
+- **Geothermal**: Earth's heat for electricity and heating, very reliable baseload power
+- **Biomass**: Organic materials for energy, important for rural communities
+- **Tidal/Wave**: Ocean energy, still emerging but promising for coastal regions
+
+**Energy Storage Solutions:**
+- **Battery Storage**: Lithium-ion costs down 90% since 2010, enabling grid integration
+- **Pumped Hydro**: Largest form of grid storage, using water reservoirs
+- **Green Hydrogen**: Produced from renewable electricity, for long-term storage
+- **Grid Modernization**: Smart grids to manage variable renewable sources
+
+**Economic & Environmental Benefits:**
+- Job creation: 13+ million jobs globally in renewable energy sector
+- Energy independence and price stability
+- Reduced air pollution and health benefits
+- Climate change mitigation potential"""
             
         elif any(term in query_lower for term in ['climate change', 'global warming', 'carbon']):
             knowledge_addition = """
-            
-General Knowledge Context:
-Climate change refers to long-term shifts in global temperatures and weather patterns. Key factors include:
-- Greenhouse gas emissions (CO2, methane, nitrous oxide)
-- Fossil fuel combustion for energy and transportation
-- Deforestation and land use changes
-- Industrial processes and agriculture
 
-Solutions involve renewable energy adoption, energy efficiency, carbon capture, and policy changes."""
+**Climate Change & Environmental Science:**
+Climate change refers to long-term shifts in global or regional climate patterns, primarily attributed to increased levels of greenhouse gases in the atmosphere.
+
+**Causes & Mechanisms:**
+- **Greenhouse Effect**: Natural warming process intensified by human activities
+- **Carbon Dioxide (CO2)**: Primary greenhouse gas from fossil fuel combustion (75% of emissions)
+- **Methane (CH4)**: From agriculture, livestock, landfills (16% of emissions)
+- **Nitrous Oxide (N2O)**: From agriculture and industrial activities
+- **Fluorinated Gases**: From refrigeration and industrial processes
+
+**Observable Impacts:**
+- Global temperature rise: 1.1°C above pre-industrial levels
+- Sea level rise: 20cm since 1900, accelerating
+- Ice sheet and glacier melting in Arctic, Antarctic, and mountain regions
+- Ocean acidification from CO2 absorption
+- Extreme weather events: heatwaves, droughts, floods, hurricanes
+
+**Mitigation Strategies:**
+- Renewable energy transition (solar, wind, hydroelectric)
+- Energy efficiency improvements in buildings and transportation
+- Carbon pricing and emissions trading systems
+- Reforestation and afforestation for carbon sequestration
+- Electric vehicles and sustainable transportation
+- Industrial decarbonization and clean technology adoption
+
+**Adaptation Measures:**
+- Climate-resilient infrastructure and urban planning
+- Agricultural adaptation and drought-resistant crops
+- Coastal protection and flood management systems
+- Early warning systems for extreme weather events"""
             
-        elif any(term in query_lower for term in ['programming', 'coding', 'software development']):
+        elif any(term in query_lower for term in ['programming', 'coding', 'software', 'development', 'python', 'javascript']):
             knowledge_addition = """
-            
-General Knowledge Context:
-Software development involves creating applications using programming languages and frameworks:
-- Popular languages: Python, JavaScript, Java, C++, Go
-- Development approaches: Agile, DevOps, Test-Driven Development
-- Key concepts: Object-oriented programming, functional programming, APIs
-- Modern practices: Version control (Git), continuous integration, cloud deployment
 
-The field emphasizes clean code, maintainability, and collaborative development."""
+**Software Development Knowledge:**
+Software development is the process of creating, designing, deploying, and maintaining software applications and systems.
+
+**Programming Languages & Use Cases:**
+- **Python**: Data science, AI/ML, web development, automation, scientific computing
+- **JavaScript**: Web development, mobile apps (React Native), server-side (Node.js)
+- **Java**: Enterprise applications, Android development, large-scale systems
+- **C++**: System programming, game development, high-performance computing
+- **Go**: Cloud infrastructure, microservices, concurrent programming
+- **Rust**: System programming, web assembly, blockchain development
+
+**Development Methodologies:**
+- **Agile**: Iterative development with regular feedback and adaptation
+- **DevOps**: Integration of development and operations for continuous delivery
+- **Test-Driven Development**: Writing tests before implementing functionality
+- **Microservices**: Breaking applications into small, independent services
+
+**Best Practices:**
+- Clean code principles: readable, maintainable, and well-documented
+- Version control with Git for collaboration and change tracking
+- Continuous integration/deployment (CI/CD) for automated testing and deployment
+- Code reviews for quality assurance and knowledge sharing
+- Design patterns for reusable and scalable solutions"""
             
-        elif any(term in query_lower for term in ['data science', 'analytics', 'statistics']):
+        elif any(term in query_lower for term in ['data science', 'analytics', 'statistics', 'data analysis', 'big data']):
             knowledge_addition = """
-            
-General Knowledge Context:
-Data science combines statistics, programming, and domain expertise to extract insights:
-- Data collection and cleaning (often 80% of the work)
-- Exploratory data analysis and visualization
-- Statistical modeling and machine learning
-- Communication of findings to stakeholders
 
-Common tools include Python (pandas, scikit-learn), R, SQL, and visualization libraries."""
+**Data Science & Analytics Knowledge:**
+Data science is an interdisciplinary field that uses scientific methods, processes, algorithms, and systems to extract knowledge and insights from structured and unstructured data.
+
+**Data Science Process:**
+1. **Data Collection**: Gathering data from various sources (databases, APIs, web scraping)
+2. **Data Cleaning**: Handling missing values, outliers, and inconsistencies (often 70-80% of work)
+3. **Exploratory Data Analysis**: Understanding data patterns, distributions, and relationships
+4. **Feature Engineering**: Creating meaningful variables for modeling
+5. **Modeling**: Applying statistical and machine learning techniques
+6. **Validation**: Testing model performance and generalization
+7. **Deployment**: Implementing models in production environments
+8. **Monitoring**: Tracking model performance and data drift
+
+**Key Tools & Technologies:**
+- **Programming**: Python (pandas, numpy, scikit-learn), R, SQL
+- **Visualization**: Matplotlib, Seaborn, Plotly, Tableau, Power BI
+- **Big Data**: Apache Spark, Hadoop, Apache Kafka
+- **Cloud Platforms**: AWS, Google Cloud, Azure for scalable computing
+- **Databases**: PostgreSQL, MongoDB, Redis for data storage
+
+**Statistical Concepts:**
+- Descriptive statistics: mean, median, variance, correlation
+- Inferential statistics: hypothesis testing, confidence intervals
+- Probability distributions and their applications
+- Regression analysis and time series forecasting
+- A/B testing for experimental design"""
             
+        # Add more general knowledge domains
+        elif any(term in query_lower for term in ['business', 'marketing', 'finance', 'economics', 'management']):
+            knowledge_addition = """
+
+**Business & Economics Knowledge:**
+Business involves the creation, exchange, and management of value through goods and services.
+
+**Core Business Functions:**
+- **Strategy**: Long-term planning, competitive analysis, market positioning
+- **Marketing**: Customer acquisition, brand building, digital marketing, content strategy
+- **Operations**: Supply chain, quality management, process optimization
+- **Finance**: Capital management, investment analysis, financial planning, budgeting
+- **Human Resources**: Talent acquisition, performance management, organizational development
+
+**Economic Principles:**
+- Supply and demand dynamics affecting pricing and market equilibrium
+- Market structures: perfect competition, monopoly, oligopoly
+- Macroeconomic indicators: GDP, inflation, unemployment, interest rates
+- International trade and globalization impacts
+
+**Modern Business Trends:**
+- Digital transformation and e-commerce growth
+- Sustainable business practices and ESG (Environmental, Social, Governance)
+- Remote work and distributed teams
+- Data-driven decision making and business intelligence
+- Subscription and platform business models"""
+        
+        elif any(term in query_lower for term in ['health', 'medicine', 'biology', 'healthcare', 'medical']):
+            knowledge_addition = """
+
+**Health & Medical Sciences:**
+Healthcare encompasses the prevention, diagnosis, treatment, and management of illness and disease.
+
+**Medical Specialties:**
+- **Primary Care**: Family medicine, internal medicine, pediatrics
+- **Specialist Care**: Cardiology, neurology, oncology, orthopedics
+- **Diagnostic**: Radiology, pathology, laboratory medicine
+- **Surgical**: General surgery, specialized surgical procedures
+- **Mental Health**: Psychiatry, psychology, counseling
+
+**Public Health Concepts:**
+- Epidemiology: Study of disease patterns and prevention
+- Preventive medicine: Vaccination, screening, lifestyle interventions
+- Health policy and healthcare systems management
+- Global health challenges: infectious diseases, chronic conditions
+
+**Medical Technology:**
+- Telemedicine and digital health platforms
+- Medical imaging: MRI, CT, ultrasound, X-ray
+- Electronic health records and health information systems
+- Precision medicine and personalized treatment approaches"""
+        
+        elif any(term in query_lower for term in ['education', 'learning', 'teaching', 'school', 'university']):
+            knowledge_addition = """
+
+**Education & Learning Sciences:**
+Education is the process of facilitating learning and skill development through instruction and experience.
+
+**Educational Approaches:**
+- **Traditional**: Classroom-based instruction with teacher-led learning
+- **Progressive**: Student-centered, experiential, and project-based learning
+- **Montessori**: Self-directed activity and collaborative play
+- **Online/Digital**: E-learning platforms, MOOCs, virtual classrooms
+
+**Learning Theories:**
+- Constructivism: Learning through building understanding and knowledge
+- Behaviorism: Learning through reinforcement and conditioning
+- Cognitivism: Focus on mental processes and information processing
+- Social Learning: Learning through observation and social interaction
+
+**Educational Technology:**
+- Learning Management Systems (LMS): Canvas, Blackboard, Moodle
+- Educational apps and gamification
+- Virtual and augmented reality in education
+- AI-powered adaptive learning systems"""
         # Combine original context with knowledge enhancement and citations
         if context and context.strip():
             enhanced_context = context + knowledge_addition
@@ -140,7 +305,18 @@ Common tools include Python (pandas, scikit-learn), R, SQL, and visualization li
                 enhanced_context += "\n- Established domain knowledge"
                 enhanced_context += "\n- General principles and facts"
             else:
-                enhanced_context = ""
+                # Provide general knowledge response for any question even without specific domain match
+                enhanced_context = f"""**General Knowledge Response:**
+
+I can help explain concepts and provide information on a wide range of topics including:
+- Science and Technology (AI, programming, data science, engineering)
+- Environment and Sustainability (climate change, renewable energy)
+- Business and Economics (management, finance, marketing)
+- Health and Medicine (healthcare, biology, public health)
+- Education and Learning (teaching methods, educational technology)
+- And many other subjects
+
+Based on your question about '{query}', I can provide detailed explanations, examples, and context from established knowledge sources."""
             
         return enhanced_context
     
