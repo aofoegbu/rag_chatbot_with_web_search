@@ -157,8 +157,12 @@ if prompt := st.chat_input("What would you like to know?"):
                 # Get relevant context using RAG
                 context, sources = st.session_state.rag_system.get_relevant_context(prompt)
                 
-                # Generate response with context
-                response = st.session_state.model_handler.generate_response(prompt, context)
+                # Generate response with context and conversation history
+                response = st.session_state.model_handler.generate_response(
+                    prompt, 
+                    context, 
+                    conversation_history=st.session_state.messages
+                )
                 
                 # Store conversation in database
                 st.session_state.db_manager.store_conversation(prompt, response, context)

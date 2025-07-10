@@ -39,6 +39,9 @@ Preferred communication style: Simple, everyday language.
 - **CSV File Support**: Added pandas-based CSV processing with structured data extraction
 - **Previous Context Integration**: Load and integrate conversation history into chat sessions
 - **Enhanced RAG Context**: Include conversation history in response generation for continuity
+- **Advanced Prompt Engineering**: Structured prompts with in-context examples and comprehensive knowledge integration
+- **Multi-Source Intelligence**: Combines document knowledge, conversation history, general knowledge, and contextual examples
+- **Web Knowledge Integration**: Enhanced responses with relevant general knowledge and reasoning capabilities
 - **Image OCR Support**: Added pytesseract integration for extracting text from images (JPG, PNG, GIF, BMP, TIFF)
 - **URL Content Extraction**: Implemented web scraping with trafilatura and BeautifulSoup for processing website content
 - **Multi-format Document Support**: Now supports PDF, text, CSV, images, and web URLs
@@ -69,17 +72,20 @@ Preferred communication style: Simple, everyday language.
 - **OCR Processing**: Extracts text from images with metadata and error handling
 - **Web Scraping**: Intelligent content extraction from websites with title and timestamp metadata
 
-### 3. RAG System (`rag_system.py`)
-- **Purpose**: Handles embedding generation and similarity search for retrieval
-- **Embedding Model**: Uses `all-MiniLM-L6-v2` from sentence-transformers for fast, lightweight embeddings
-- **Retrieval Strategy**: Cosine similarity search with configurable top-k results
+### 3. RAG System (`rag_system.py` + `web_search_integration.py`)
+- **Purpose**: Handles embedding generation, similarity search, and knowledge enhancement for retrieval
+- **Embedding Model**: Uses `all-MiniLM-L6-v2` from sentence-transformers for fast, lightweight embeddings with simple fallback
+- **Retrieval Strategy**: Cosine similarity search with configurable top-k results and relevance thresholding
 - **Context Integration**: Automatically includes recent conversation history for contextual continuity
-- **Smart Context**: Combines document chunks with previous Q&A for comprehensive responses
+- **Knowledge Enhancement**: Integrates general knowledge, examples, and reasoning with document context
+- **Multi-Source Context**: Combines document chunks, conversation history, and web knowledge for comprehensive responses
 
 ### 4. Model Handler (`model_handler.py`)
-- **Purpose**: Manages the language model for generating responses
+- **Purpose**: Manages the language model for generating responses with advanced prompt engineering
 - **Primary Model**: Microsoft Phi-3-mini-4k-instruct for efficient CPU-based inference
-- **Fallback Strategy**: DialoGPT-medium as backup if primary model fails to load
+- **Fallback Strategy**: Enhanced rule-based responses with knowledge integration when ML models unavailable
+- **Prompt Engineering**: Structured prompts with in-context examples, conversation history, and comprehensive context
+- **Knowledge Integration**: Combines document context with general knowledge, examples, and reasoning
 - **Optimization**: CPU-optimized loading with float32 precision and low memory usage
 
 ### 5. Main Application (`app.py`)

@@ -106,10 +106,22 @@ class RAGSystem:
                 except Exception as conv_error:
                     print(f"Could not retrieve conversation history: {conv_error}")
             
-            # Combine context
-            context = "\n\n".join(context_parts) if context_parts else "No relevant context found."
-            
-            return context, sources
+            # Enhance with web knowledge integration
+            try:
+                from web_search_integration import web_search_integrator
+                base_context = "\n\n".join(context_parts) if context_parts else ""
+                enhanced_context, web_sources = web_search_integrator.search_and_enhance(query, base_context)
+                
+                # Add web sources to the sources list
+                if web_sources:
+                    sources.extend(web_sources)
+                
+                return enhanced_context, sources
+                
+            except ImportError:
+                # Fallback if web search integration is not available
+                context = "\n\n".join(context_parts) if context_parts else "No relevant context found."
+                return context, sources
             
         except Exception as e:
             print(f"Error getting relevant context: {e}")
