@@ -61,16 +61,28 @@ uploaded_file = st.sidebar.file_uploader(
 )
 
 if uploaded_file is not None:
+    # Show file info
+    st.sidebar.write(f"**File:** {uploaded_file.name}")
+    st.sidebar.write(f"**Size:** {uploaded_file.size} bytes")
+    st.sidebar.write(f"**Type:** {uploaded_file.type}")
+    
     if st.sidebar.button("Process Document"):
         with st.sidebar.spinner("Processing document..."):
             try:
                 success = st.session_state.doc_processor.process_document(uploaded_file)
                 if success:
                     st.sidebar.success("Document processed successfully!")
+                    # Show processing details
+                    doc_count = st.session_state.db_manager.get_document_count()
+                    st.sidebar.info(f"Knowledge base now contains {doc_count} documents")
                 else:
-                    st.sidebar.error("Failed to process document.")
+                    st.sidebar.error("Failed to process document. Check the console for details.")
             except Exception as e:
                 st.sidebar.error(f"Error processing document: {str(e)}")
+                # Also print to console for debugging
+                print(f"Document processing error: {str(e)}")
+                import traceback
+                traceback.print_exc()
 
 # Display document count
 doc_count = st.session_state.db_manager.get_document_count()

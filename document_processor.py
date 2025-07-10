@@ -66,6 +66,8 @@ class DocumentProcessor:
             
         except Exception as e:
             print(f"Error processing document: {e}")
+            import traceback
+            traceback.print_exc()
             return False
     
     def _extract_text_from_pdf(self, uploaded_file) -> str:
@@ -74,29 +76,83 @@ class DocumentProcessor:
             return "PDF processing is not available. Please install PyPDF2 or upload a text file instead."
             
         try:
-            # Read the PDF file
-            pdf_reader = PyPDF2.PdfReader(io.BytesIO(uploaded_file.read()))
+            # Reset file pointer and read the PDF file
+            uploaded_file.seek(0)
+            pdf_content = uploaded_file.read()
             
-            text = ""
-            for page in pdf_reader.pages:
-                text += page.extract_text() + "\n"
+            # Create PDF reader from bytes
+            pdf_reader = PyPDF2.PdfReader(io.BytesIO(pdf_content))
             
-            return text
+            text_parts = []
+            
+            # Extract text from each page
+            for page_num, page in enumerate(pdf_reader.pages):
+                try:
+                    page_text = page.extract_text()
+                    if page_text.strip():  # Only add non-empty pages
+                        text_parts.append(f"Page {page_num + 1}:\n{page_text}")
+                except Exception as page_error:
+                    print(f"Error extracting text from page {page_num + 1}: {page_error}")
+                    continue
+            
+            if not text_parts:
+                return "No readable text found in the PDF. The PDF might be image-based or corrupted."
+                
+            # Add PDF metadata
+            metadata_info = []
+            if hasattr(pdf_reader, 'metadata') and pdf_reader.metadata:
+                try:
+                    if '/Title' in pdf_reader.metadata:
+                        metadata_info.append(f"Title: {pdf_reader.metadata['/Title']}")
+                    if '/Author' in pdf_reader.metadata:
+                        metadata_info.append(f"Author: {pdf_reader.metadata['/Author']}")
+                except:
+                    pass  # Skip metadata if not accessible
+            
+            # Combine all text
+            full_text = ""
+            if metadata_info:
+                full_text += "PDF Information:\n" + "\n".join(metadata_info) + "\n\n"
+            
+            full_text += "\n\n".join(text_parts)
+            
+            print(f"Successfully extracted text from PDF: {len(text_parts)} pages, {len(full_text)} characters")
+            return full_text
             
         except Exception as e:
-            print(f"Error extracting text from PDF: {e}")
-            return ""
+            error_msg = f"Error extracting text from PDF: {e}"
+            print(error_msg)
+            return f"Failed to process PDF file: {str(e)}. Please ensure the PDF is not corrupted or password-protected."
     
     def _extract_text_from_txt(self, uploaded_file) -> str:
         """Extract text from a text file."""
         try:
-            # Decode the text file
-            text = uploaded_file.read().decode('utf-8')
+            # Reset file pointer and read content
+            uploaded_file.seek(0)
+            content = uploaded_file.read()
+            
+            # Try to decode as UTF-8, fallback to latin-1 if that fails
+            if isinstance(content, bytes):
+                try:
+                    text = content.decode('utf-8')
+                except UnicodeDecodeError:
+                    try:
+                        text = content.decode('latin-1')
+                    except UnicodeDecodeError:
+                        text = content.decode('utf-8', errors='ignore')
+            else:
+                text = content
+                
+            if not text.strip():
+                return "The text file appears to be empty."
+                
+            print(f"Successfully extracted text from TXT: {len(text)} characters")
             return text
             
         except Exception as e:
-            print(f"Error extracting text from TXT: {e}")
-            return ""
+            error_msg = f"Error reading text file: {e}"
+            print(error_msg)
+            return f"Failed to process text file: {str(e)}"
     
     def _extract_text_from_csv(self, uploaded_file) -> str:
         """Extract text from a CSV file."""

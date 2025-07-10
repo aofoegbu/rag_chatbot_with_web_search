@@ -1,0 +1,34 @@
+Ogelo RAG Chat Assistant User Guide
+
+Welcome to the Ogelo RAG Chat Assistant! This is an advanced AI-powered chat system that can understand and reference documents you upload.
+
+Key Features:
+1. Document Upload Support
+   - PDF files with automatic text extraction
+   - Plain text files (.txt format)
+   - CSV files with structured data processing
+
+2. Intelligent Conversation
+   - Retrieval-Augmented Generation (RAG) technology
+   - Context-aware responses based on your documents
+   - Conversation history integration
+
+3. Database Capabilities
+   - PostgreSQL support for scalability
+   - SQLite fallback for simplicity
+   - Automatic conversation logging
+
+4. Testing and Monitoring
+   - Comprehensive system testing tools
+   - Real-time database statistics
+   - System status indicators
+
+How to Use:
+1. Upload your documents using the sidebar file uploader
+2. Wait for processing to complete
+3. Start chatting! Ask questions about your uploaded content
+4. Use the testing tools to verify system functionality
+
+The system will automatically find relevant information from your documents to provide accurate, contextual responses.
+
+For technical support or questions about the system architecture, refer to the documentation or use the built-in testing features.
