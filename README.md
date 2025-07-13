@@ -4,7 +4,6 @@ An advanced AI-powered document processing and knowledge retrieval system that p
 
 https://ai-chat-companion-augustineogelo.replit.app/
 
-
 ![RAG Chatbot](screenshots/rag_chat.png)
 
 ## 🌟 Key Features
