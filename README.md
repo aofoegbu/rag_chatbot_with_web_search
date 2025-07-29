@@ -6,7 +6,7 @@ https://ai-chat-companion-augustineogelo.replit.app/
 
 
 ![RAG Chatbot](screenshots/rag_chat.png)
-
+ 
 ## 🌟 Key Features
 
 ### Universal Question Answering
