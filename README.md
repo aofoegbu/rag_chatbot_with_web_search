@@ -2,7 +2,7 @@
 
 An advanced AI-powered document processing and knowledge retrieval system that provides comprehensive answers to any question with proper source citations.
 
-https://ai-chat-companion-augustineogelo.replit.app/
+https://ai-chat-companion-augustineogelo.replit.app/](https://ogeloragchat.live/
 
 
 ![RAG Chatbot](screenshots/rag_chat.png)
