@@ -7,7 +7,22 @@ https://ogeloragchat.live
 
 ![RAG Chatbot](screenshots/rag_chat.png)
 
-    
+## 📊 Features Overview
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| Universal Q&A | Answer any question with sources | ✅ Active |
+| PDF Processing | Extract text from PDF documents | ✅ Active |
+| Image OCR | Extract text from images | ✅ Active |
+| CSV Analysis | Process structured data | ✅ Active |
+| Web Scraping | Extract content from URLs | ✅ Active |
+| PostgreSQL | Primary database backend | ✅ Active |
+| SQLite Fallback | Backup database system | ✅ Active |
+| Conversation History | Track chat sessions | ✅ Active |
+| Web Search | Real-time information access | ✅ Active |
+| Source Citations | Proper attribution | ✅ Active |
+
+     
 ## 🌟 Key Features
 
 ### Universal Question Answering
@@ -139,21 +154,6 @@ The system supports multiple AI models:
 - **Phi-3 Mini**: Recommended for general use (efficient, 4K context)
 - **DialoGPT**: Alternative conversational model
 - **Fallback System**: Enhanced rule-based responses when models unavailable
-
-## 📊 Features Overview
-
-| Feature | Description | Status |
-|---------|-------------|--------|
-| Universal Q&A | Answer any question with sources | ✅ Active |
-| PDF Processing | Extract text from PDF documents | ✅ Active |
-| Image OCR | Extract text from images | ✅ Active |
-| CSV Analysis | Process structured data | ✅ Active |
-| Web Scraping | Extract content from URLs | ✅ Active |
-| PostgreSQL | Primary database backend | ✅ Active |
-| SQLite Fallback | Backup database system | ✅ Active |
-| Conversation History | Track chat sessions | ✅ Active |
-| Web Search | Real-time information access | ✅ Active |
-| Source Citations | Proper attribution | ✅ Active |
 
 ## 🧪 Testing
 
