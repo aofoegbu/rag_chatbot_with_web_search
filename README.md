@@ -61,7 +61,7 @@ https://ogeloragchat.live
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/aofoegbu/rag_chatbot_with_web_search
    cd ogelo-rag-chat-assistant
    ```
 
