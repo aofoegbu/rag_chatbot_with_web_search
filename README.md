@@ -8,7 +8,7 @@ https://ogeloragchat.live
 ![RAG Chatbot](screenshots/rag_chat.png)
  
 ## 📊 Features Overview
-
+ 
 | Feature | Description | Status |
 |---------|-------------|--------|
 | Universal Q&A | Answer any question with sources | ✅ Active |
